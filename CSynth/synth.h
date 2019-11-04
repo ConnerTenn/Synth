@@ -51,6 +51,6 @@ void Tick();
 
 void Output();
 
-void NoteOn(Reg freq);
-void NoteOff();
+void NoteOn(Reg freq, u8 voice);
+void NoteOff(u8 voice);
 

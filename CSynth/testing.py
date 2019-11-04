@@ -15,7 +15,7 @@ print()
 print("Integer Scaling  Integer Scaling  Decimal Scaling")
 print("Scale | Val | D  Scale | Val | D  Scale | Val | D")
 print("---------------  ---------------  ---------------")
-n=255 #100
+n=100 #100
 for i in range(0xFF,-1,-1):
 	v1=scale(n,i,8)
 	v2=scale((n<<1)+(1<<1),i,9)>>1
