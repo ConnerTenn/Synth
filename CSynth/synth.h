@@ -2,9 +2,6 @@
 #include "globals.h"
 
 
-extern u32 WC;
-extern u32 INCR;
-
 #define Sawtooth 0
 #define Square 1
 #define Triangle 2
@@ -28,8 +25,9 @@ Reg RegMod(Reg a, Reg b, u8 bits);
 typedef struct 
 {
 	Reg Incr;
-	Reg Bend;
 	Reg Oscillator;
+	Reg PulseWidth;
+	Reg Bend;
 	u8 Type;
 	
 } Waveform;

@@ -3,10 +3,6 @@
 #include "audioiface.h"
 #include <math.h>
 
-u32 WC=0;
-u32 INCR;
-
-//#define ASSERTBITDEPTH { if (a.Bits!=b.Bits) { fprintf(stderr,"Error::%s: Bit depths do not match\n", __FUNCTION__); exit(1); } }
 void RegSet(Reg *a, Reg b)
 {
 	b.Value=b.Value&(~(U64MAX<<b.Bits));
@@ -56,25 +52,24 @@ Waveform WF0;
 
 void InitSynth()
 {
-	WF0.Bend.Bits=24;
 	WF0.Incr.Bits=24;
 	WF0.Oscillator.Bits=24;
+	WF0.PulseWidth.Bits=24;
+	WF0.Bend.Bits=24;
 	NoteOff();
 }
 
 void Tick()
 {
-	//static u16 i = 0;
-	//i16 off = 10*sin(6*i*TAU/65535); i++;
-	if (WC+INCR>0xFFFFFF) { WC=0; }
-	else { WC+=INCR; }
-
+	//If Oscillator overflows with Incr
 	if(RegAdd(WF0.Oscillator, WF0.Incr,25).Value&(1<<25))
 	{
+		//reset to 0
 		RegSet(&WF0.Oscillator, (Reg){.Bits=24,.Value=0});
 	}
 	else
 	{
+		//Else add
 		WF0.Oscillator=RegAdd(WF0.Oscillator, WF0.Incr,24);
 	}
 }
@@ -82,11 +77,7 @@ void Tick()
 void Output()
 {
 	u32 v = (0xFFFFFF/10);
-	//u16 s = (v*WC+65535*32768-v*32768)/65535;
-	//i16 s = (v*WC-v*32768)/65535;
-	//i16 s = Amplitude16(WC, v)-U16MAX/2;
 	//i16 s = (0xFFFF*((u64)v*WC-v*0xFFFFFF/2)/0xFFFFFF)/0xFFFFFF;
-	//i16 s = (u64)U16MAX*Amplitude24(WC, v)/0xFFFFFF-32768;
 	i16 s = (u64)U16MAX*Amplitude24(WF0.Oscillator.Value, v)/0xFFFFFF-32768;
 
 	PulseWrite((u8 *)&s, 1*sizeof(i16));

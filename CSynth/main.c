@@ -60,15 +60,11 @@ void PlayKey(u8 key)
 	for (int i=0; i<20; i++) { if (key==KeyMap[i][0]) { keyNum=KeyMap[i][1]+12*Octave; } }
 	if (keyNum!=(u8)-1)
 	{
-		INCR=NoteMap[keyNum];
-		WC=0;
 		NoteOn((Reg){.Bits=24,.Value=NoteMap[keyNum]});
-		printf("Play %d [%d]  %d\n", keyNum+1, Octave+1, INCR);
+		printf("Play %d [%d]  %d\n", keyNum+1, Octave+1, NoteMap[keyNum]);
 	}
 	else
 	{
-		INCR=0;
-		WC=8388608;
 		NoteOff();
 	}
 }
@@ -98,7 +94,6 @@ int main()
 
 	Disp = XOpenDisplay(0);
 	Win = (Window)atoi(getenv("WINDOWID"));
-
 	XSelectInput(Disp, Win, KeyPressMask | KeyReleaseMask);
 	XMapWindow(Disp, Win);
 	XFlush(Disp);
@@ -150,15 +145,13 @@ int main()
 
 		}
 
-		for (int i=0; i<20; i++) { Tick(); }
-		//Tick();
+		for (int i=0; i<20; i++) { Tick(); } //5000 SampleRate * 20 = 1000000 MHz Update Frequency
+
 		Output();
-		//static u64 i=0;
-		//if (i++%50==0) { OV=(OV+1)%800; }
 	}
 
 	printf("\nClosing...\n");
-	//DestroyPulseAudio();
+	DestroyPulseAudio();
 	reset_terminal_mode();
 	printf("\nDone\n");
 
