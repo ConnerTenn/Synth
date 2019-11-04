@@ -26,6 +26,11 @@ typedef short i16;
 typedef int i32;
 typedef long i64;
 
+#define U8MAX ((u8)0xFFU)
+#define U16MAX ((u16)0xFFFFU)
+#define U32MAX ((u32)0xFFFFFFFFU)
+#define U64MAX ((u64)0xFFFFFFFFFFFFFFFFU)
+
 extern u8 Run;
 
 union Ksequ

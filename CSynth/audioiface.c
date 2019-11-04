@@ -16,7 +16,7 @@ int InitPulseAudio()
     /* The Sample format to use */
     static const pa_sample_spec ss = {
 			.format = PA_SAMPLE_S16LE,
-			.rate = 44800,
+			.rate = 50000,
 			.channels = 1 };
     
 	int error;	

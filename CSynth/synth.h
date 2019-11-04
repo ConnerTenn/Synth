@@ -2,8 +2,8 @@
 #include "globals.h"
 
 
-extern u16 WC;
-extern u16 INCR;
+extern u32 WC;
+extern u32 INCR;
 
 void Tick();
 
