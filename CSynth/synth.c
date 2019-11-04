@@ -39,6 +39,37 @@ Reg RegMod(Reg a, Reg b, u8 bits)
 	return REG((a.Value%b.Value)&RIGHTMASK(U64MAX,bits), bits);
 }
 
+u64 RegScaleRaw(u64 val, u64 scale, u8 bits)
+{
+	u64 r=0;
+	for (u8 i=0; i<bits; i++)
+	{
+		r += (scale&(1<<(bits-i-1))?1:0) * (val>>i);
+	}
+	return r;
+}
+
+Reg RegScale(Reg val, Reg scale, u8 bits)
+{
+	val.Value=val.Value&RIGHTMASK(U64MAX,val.Bits);
+	scale.Value=scale.Value&RIGHTMASK(U64MAX,scale.Bits);
+
+	u64 r=RegScaleRaw(val.Value, scale.Value, bits);
+
+	r=r&RIGHTMASK(U64MAX,bits+1);
+	return REG(r, bits+1);
+}
+Reg RegScaleShft(Reg val, Reg scale, u8 bits, u8 shift)
+{
+	val.Value=val.Value&RIGHTMASK(U64MAX,val.Bits);
+	scale.Value=scale.Value&RIGHTMASK(U64MAX,scale.Bits);
+
+	u64 r=RegScaleRaw((val.Value<<shift)+(1<<shift), scale.Value, bits+1)>>shift;
+	
+	r=r&RIGHTMASK(U64MAX,bits);
+	return REG(r, bits);
+}
+
 u16 Amplitude16(u16 val, u16 amp)
 {
 	return (u16)(((u32)amp*val+(u32)U16MAX*U16MAX/2-(u32)amp*U16MAX/2)/(u32)U16MAX);

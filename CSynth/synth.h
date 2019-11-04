@@ -25,6 +25,9 @@ Reg RegMul(Reg a, Reg b, u8 bits);
 Reg RegDiv(Reg a, Reg b, u8 bits);
 Reg RegMod(Reg a, Reg b, u8 bits);
 
+Reg RegScale(Reg val, Reg scale, u8 bits);
+Reg RegScaleShft(Reg val, Reg scale, u8 bits, u8 shift);
+
 typedef struct 
 {
 	Reg Incr;

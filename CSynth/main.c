@@ -103,6 +103,14 @@ int main()
 	InitPulseAudio();
 	InitSynth();
 
+	// Reg n=REG(255,8);
+	// for (int i=255; i>=0; i--)
+	// {
+	// 	Reg v1=RegScale(n,REG(i,8),8);
+	// 	Reg v2=RegScaleShft(n,REG(i,8),8,4);
+	// 	printf("%d | %d  %d\n", i, v1.Value, v2.Value);
+	// }
+
 	printf("Octave %d\n", Octave+1);
 	//OV=11;
 	while(Run) 
