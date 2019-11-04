@@ -11,9 +11,12 @@
 
 typedef struct
 {
-	u8 Bits;
 	u64 Value;
+	u8 Bits;
 } Reg;
+
+#define REG(v,b) ((Reg){.Value=(v),.Bits=(b)})
+#define RIGHTMASK(m,n) (~((m)<<(n)))
 
 void RegSet(Reg *a, Reg b);
 Reg RegAdd(Reg a, Reg b, u8 bits);
@@ -38,8 +41,6 @@ typedef struct
 	Waveform LFO;
 	u8 LFOMod;
 } WaveformGenerator;
-
-u16 Amplitude16(u16 val, u16 amp);
 
 void InitSynth();
 

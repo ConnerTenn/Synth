@@ -5,8 +5,14 @@
 #include "audioiface.h"
 #include "synth.h"
 
-u8 Run=1;
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+#include <X11/Xos.h>
+#include <X11/Xatom.h>
+#include <X11/keysym.h>
 
+
+u8 Run=1;
 
 u8 Octave=2;
 char Keys[127];
@@ -46,12 +52,6 @@ u32 NoteMap[] =
 		17557,18601,19708,20879,22121,23436,24830,26306,27871,29528,31284,33144,
 		35115,37203,39415,41759,44242,46873,49660,52613,55741,
 	};
-
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include <X11/Xos.h>
-#include <X11/Xatom.h>
-#include <X11/keysym.h>
 
 
 void PlayKey(u8 key)

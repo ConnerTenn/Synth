@@ -5,38 +5,38 @@
 
 void RegSet(Reg *a, Reg b)
 {
-	b.Value=b.Value&(~(U64MAX<<b.Bits));
-	a->Value=b.Value&(~(U64MAX<<a->Bits));
+	b.Value=b.Value&RIGHTMASK(U64MAX,b.Bits);
+	a->Value=b.Value&RIGHTMASK(U64MAX,a->Bits);
 }
 Reg RegAdd(Reg a, Reg b, u8 bits)
 {
-	a.Value=a.Value&(~(U64MAX<<a.Bits));
-	b.Value=b.Value&(~(U64MAX<<b.Bits));
-	return (Reg){.Bits=bits, (a.Value+b.Value)&(~(U64MAX<<bits))};
+	a.Value=a.Value&RIGHTMASK(U64MAX,a.Bits);
+	b.Value=b.Value&RIGHTMASK(U64MAX,b.Bits);
+	return REG((a.Value+b.Value)&RIGHTMASK(U64MAX,bits), bits);
 }
 Reg RegSub(Reg a, Reg b, u8 bits)
 {
-	a.Value=a.Value&(~(U64MAX<<a.Bits));
+	a.Value=a.Value&RIGHTMASK(U64MAX,a.Bits);
 	b.Value=b.Value&(~(U64MAX<<b.Bits));
-	return (Reg){.Bits=bits, (a.Value-b.Value)&(~(U64MAX<<bits))};
+	return REG((a.Value-b.Value)&RIGHTMASK(U64MAX,bits), bits);
 }
 Reg RegMul(Reg a, Reg b, u8 bits)
 {
-	a.Value=a.Value&(~(U64MAX<<a.Bits));
-	b.Value=b.Value&(~(U64MAX<<b.Bits));
-	return (Reg){.Bits=bits, (a.Value*b.Value)&(~(U64MAX<<bits))};
+	a.Value=a.Value&RIGHTMASK(U64MAX,a.Bits);
+	b.Value=b.Value&RIGHTMASK(U64MAX,b.Bits);
+	return REG((a.Value*b.Value)&RIGHTMASK(U64MAX,bits), bits);
 }
 Reg RegDiv(Reg a, Reg b, u8 bits)
 {
-	a.Value=a.Value&(~(U64MAX<<a.Bits));
-	b.Value=b.Value&(~(U64MAX<<b.Bits));
-	return (Reg){.Bits=bits, (a.Value/b.Value)&(~(U64MAX<<bits))};
+	a.Value=a.Value&RIGHTMASK(U64MAX,a.Bits);
+	b.Value=b.Value&RIGHTMASK(U64MAX,b.Bits);
+	return REG((a.Value/b.Value)&RIGHTMASK(U64MAX,bits), bits);
 }
 Reg RegMod(Reg a, Reg b, u8 bits)
 {
-	a.Value=a.Value&(~(U64MAX<<a.Bits));
-	b.Value=b.Value&(~(U64MAX<<b.Bits));
-	return (Reg){.Bits=bits, (a.Value%b.Value)&(~(U64MAX<<bits))};
+	a.Value=a.Value&RIGHTMASK(U64MAX,a.Bits);
+	b.Value=b.Value&RIGHTMASK(U64MAX,b.Bits);
+	return REG((a.Value%b.Value)&RIGHTMASK(U64MAX,bits), bits);
 }
 
 u16 Amplitude16(u16 val, u16 amp)
@@ -48,14 +48,16 @@ u32 Amplitude24(u32 val, u32 amp)
 	return (u32)(((u64)amp*val+(u64)0xFFFFFF*0xFFFFFF/2-(u64)amp*0xFFFFFF/2)/(u64)0xFFFFFF);
 }
 
-Waveform WF0;
+Waveform WF0=
+	{
+		.Incr=REG(0,24),
+		.Oscillator=REG(0,24),
+		.PulseWidth=REG(0,24),
+		.Bend=REG(0,24)
+	};
 
 void InitSynth()
 {
-	WF0.Incr.Bits=24;
-	WF0.Oscillator.Bits=24;
-	WF0.PulseWidth.Bits=24;
-	WF0.Bend.Bits=24;
 	NoteOff();
 }
 
@@ -65,7 +67,7 @@ void Tick()
 	if(RegAdd(WF0.Oscillator, WF0.Incr,25).Value&(1<<25))
 	{
 		//reset to 0
-		RegSet(&WF0.Oscillator, (Reg){.Bits=24,.Value=0});
+		RegSet(&WF0.Oscillator, REG(0,24));
 	}
 	else
 	{
@@ -86,13 +88,13 @@ void Output()
 void NoteOn(Reg freq)
 {
 	RegSet(&WF0.Incr, freq);
-	RegSet(&WF0.Oscillator, (Reg){.Bits=24,.Value=0x1000000/2});
+	RegSet(&WF0.Oscillator, REG(0x1000000/2,24));
 }
 
 void NoteOff()
 {
-	RegSet(&WF0.Incr, (Reg){.Bits=24,.Value=0});
-	RegSet(&WF0.Oscillator, (Reg){.Bits=24,.Value=0x1000000/2});
+	RegSet(&WF0.Incr, REG(0,24));
+	RegSet(&WF0.Oscillator, REG(0x1000000/2,24));
 }
 
 
