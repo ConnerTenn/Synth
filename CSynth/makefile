@@ -1,6 +1,7 @@
 
 GCC=gcc
 CFLAGS= -O3
+LIBS=-lX11 -lm -lpulse -lpulse-simple
 
 .PHONY: all program
 
@@ -11,8 +12,8 @@ all: program
 	$(GCC) $(CFLAGS) $< -c -o $@
 
 
-program: main.o globals.o audioiface.o
-	$(GCC) $(CFLAGS) $? -lX11 -lpulse -lpulse-simple -o $@
+program: main.o globals.o audioiface.o synth.o
+	$(GCC) $(CFLAGS) $(LIBS) $? -o $@
 
 
 clean:

@@ -3,43 +3,12 @@
 #include <signal.h>
 #include "globals.h"
 #include "audioiface.h"
+#include "synth.h"
 
 u8 Run=1;
 
-u16 WC=0;
-u16 INCR;
 
-void Tick()
-{
-	//WC+=INCR;
-	//if (WC>=OV) { WC=0; }
-	if (WC+INCR>65535) { WC=0; }
-	else { WC+=INCR; }
-}
-
-void Output()
-{
-	//static long long i=0;
-	
-	//unsigned short s = (int)(32768+(65535/8)*(((i++)%44)/44.0)); //(int)(32768+(65535/8)*(((sin((i++)*3.1415926535*2/44)))));
-	//static unsigned short c=0;
-	//c=(c+1)%42;
-
-	//u16 s = 32768+((32768/5)*WC/OV);
-	u16 v = (65535/10);
-	//u16 s = (v*WC+65535*32768-v*32768)/65535;
-	i16 s = (v*WC-v*32768)/65535;
-
-	//putchar(s&0xFF);
-	//putchar((s>>8)&0xFF);
-	PulseWrite((u8 *)&s, 1*sizeof(i16));
-	//printf("%d\n", s);
-	fflush(stdout);
-	//fprintf(stderr, "%d\n", s);
-	//if (i%4400==0) { fprintf(stderr, "Tick %d\n", i/4400); }
-}
-
-u8 Octave=0;
+u8 Octave=2;
 char Keys[127];
 char KeyMap[][2] = 
 	{
@@ -55,6 +24,7 @@ char KeyMap[][2] =
 		{'u', 9}, //F#
 		{'j', 10}, //G
 		{'i', 11}, //G#
+
 		{'k', 12}, //A
 		{'o', 13}, //A#
 		{'l', 14}, //B
@@ -90,7 +60,7 @@ void PlayKey(u8 key)
 	{
 		INCR=NoteMap[keyNum];
 		WC=0;
-		printf("Play %d [%d]  %d\n", keyNum, Octave, INCR);
+		printf("Play %d [%d]  %d\n", keyNum+1, Octave+1, INCR);
 	}
 	else
 	{

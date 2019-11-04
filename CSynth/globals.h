@@ -9,7 +9,7 @@
 #define MIN(a,b) ((a)<=(b)?(a):(b))
 #define MAX(a,b) ((a)>=(b)?(a):(b))
 #define ABS(a) ((a)<0?-(a):(a))
-#define PI M_PIl
+#define PI (3.14159265358979323L)
 #define TAU (2.0*PI)
 #define MOD(a,b) ((a)%(b)+((a)<0?(b):0))
 #define CEILDIV(a,b) ( (((long int)(a))/((long int)(b))) + (((long int)(a))%((long int)(b))?1:0))
