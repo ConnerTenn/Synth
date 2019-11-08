@@ -4,31 +4,6 @@ from scaleTest import scale
 
 v=0xFF
 
-#Divide by 2
-out=[]
-for i in range(0,150):
-	v=(v>>1)
-	out+=[v]
-plt.plot(out)
-
-# #Convolution
-# v=0xFF
-# out=[]
-# for i in range(0,150):
-# 	v=0
-# 	for j in range(100-i):
-# 		v+=j/100
-# 	v=2*255*v/100
-# 	out+=[v]
-# plt.plot(out)
-
-# #Repeated scale
-# v=0xFF
-# out=[]
-# for i in range(0,150):
-# 	out+=[v]
-# 	v=v-(scale(v,10,8)|1)
-# plt.plot(out)
 
 v=255
 m=4#0
@@ -46,25 +21,6 @@ for i in range(0,150):
 plt.plot(out)
 plt.legend()
 
-
-v=255
-d=0
-c=0
-m=0
-#sqrt
-out=[]
-for i in range(0,150):
-	
-	vo = d
-	if (c>=m):
-		m+=1#m=d&(2**5-1)
-		d=d+(d>>4)+1
-		c=0
-	out+=[vo]
-	c+=1
-
-plt.plot(out)
-plt.legend()
 
 v=255
 s=0
@@ -107,6 +63,26 @@ for i in range(0,150):
 plt.plot(out)
 plt.legend()
 
+v=255
+corner=5
+c=0
+#Double V
+out=[]
+for i in range(0,150):
+	out+=[v]
+	u=(v>>corner)
+	l=(2**corner) - (v&(2**corner)-1)
+	if u:
+		v-=u
+	else:
+		if (c>=l):
+			v-=1
+			c=0
+		c+=1
+
+plt.plot(out)
+plt.legend()
+
 
 #Exponential
 out=[]
@@ -115,5 +91,5 @@ for i in range(0,150):
 plt.plot(out)
 
 
-plt.legend(["Divide by 2", "Repeated Subtract", "sqrt", "Repeated Subtract 2", "Inverse x scale", "Exponential"])
+plt.legend(["Repeated Subtract", "Repeated Subtract 2", "Inverse x scale", "Double V", "Exponential"])
 plt.show()
