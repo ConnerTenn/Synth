@@ -46,15 +46,67 @@ for i in range(0,150):
 plt.plot(out)
 plt.legend()
 
-#Repeated scale
-v=0xFF
+
+v=255
+d=0
+c=0
+m=0
+#sqrt
+out=[]
+for i in range(0,150):
+	
+	vo = d
+	if (c>=m):
+		m+=1#m=d&(2**5-1)
+		d=d+(d>>4)+1
+		c=0
+	out+=[vo]
+	c+=1
+
+plt.plot(out)
+plt.legend()
+
+v=255
+s=0
+d=0
+dx=0
+dy=10
+c=0
+#Repeated subtract 2
+out=[]
+for i in range(0,150):
+	out+=[v-d]
+	if s==0:
+		d+=dy
+		dy-=1
+	else:
+		#d+=1
+		if c>=dx:
+			dx+=1
+			d+=1
+			c=0
+		c+=1
+	if dy==0: s=1
+
+plt.plot(out)
+plt.legend()
+
+v=255
+c=0
+m=0
+#Inverse x scale
 out=[]
 for i in range(0,150):
 	out+=[v]
-	
-	v=int(v*0.96)
+	if (c>=m):
+		m=255-v
+		v-=1
+		c=0
+	c+=1
+
 plt.plot(out)
 plt.legend()
+
 
 #Exponential
 out=[]
@@ -63,5 +115,5 @@ for i in range(0,150):
 plt.plot(out)
 
 
-plt.legend(["Divide by 2", "Repeated Subtract", "Repeated Scale", "Exponential"])
+plt.legend(["Divide by 2", "Repeated Subtract", "sqrt", "Repeated Subtract 2", "Inverse x scale", "Exponential"])
 plt.show()
