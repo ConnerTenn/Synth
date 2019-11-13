@@ -2,24 +2,18 @@
 import matplotlib.pyplot as plt
 from scaleTest import scale
 
-v=0xFF
-
-
-v=255
-m=4#0
-c=0
+value=255
+maximum=4
+counter=0
 #Repeated subtract
-out=[]
+out=[] #list of output points
 for i in range(0,150):
-	out+=[v]
-	if (c>=m):
-		d=(v>>3)+1
-		v-=d
-		c=0
-		#m+=1
-	c+=1
-plt.plot(out)
-plt.legend()
+	out+=[value]
+	if (counter>=maximum): #after counter overflows, 
+		decrement = (value>>3)+1 # value/8 + 1
+		value = value - decrement
+		counter = 0 #Reset counter
+	counter += 1 #increment counter
 
 
 v=255
@@ -84,10 +78,11 @@ plt.plot(out)
 plt.legend()
 
 
-#Exponential
+#True Exponential
 out=[]
 for i in range(0,150):
-	out+=[int(255*(2**(0.05*-i)))]
+	out+=[int(255*(2**(0.05*-i)))] # out = 255 * 2^(0.05*(-i))
+	
 plt.plot(out)
 
 
