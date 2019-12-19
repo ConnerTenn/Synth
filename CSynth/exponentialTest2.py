@@ -27,7 +27,7 @@ for i in range(0,2000):
 	out+=[value]
 	if method==1:
 		if (counter>=maximum): #after counter overflows, 
-			decrement = (value>>4)+1 # value/8 + 1
+			decrement = (value>>4)+1
 			value = value - decrement
 			counter = 0 #Reset counter
 			if decrement==1:
@@ -44,6 +44,20 @@ for i in range(0,2000):
 
 plt.plot(out)
 
+
+#LinearBastardization
+out=[]
+V=255
+D=255
+for i in range(0,2000):
+	out+=[V]
+	if (D>0):
+		V-=1#(V>>2)+1
+		D-=4*255 #Changing this multiplier changes the scale of the decayfactor
+	D+=13*((V>>2)+1) #The multiplier is the decay factor. The larger, the faster the decay
+
+plt.plot(out)
+
 #True Exponential
 out=[]
 for i in range(0,2000):
@@ -52,6 +66,6 @@ for i in range(0,2000):
 plt.plot(out)
 
 
-plt.legend(["Repeated Subtract", "DualSword", "Exponential"])
+plt.legend(["Repeated Subtract", "DualSword", "LinearBastardization", "Exponential"])
 plt.show()
 
