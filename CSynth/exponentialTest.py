@@ -90,6 +90,52 @@ for i in range(0,150):
 
 plt.plot(out)
 
+#Overlapping differences
+out=[]
+v=255
+s1=4
+s2=s1-1
+t=15
+tm=15
+tc=0
+for i in range(0,150):
+	out+=[v]
+	print("s1:{} s2:{}  t:{} tc:{} tm:{}".format(s1,s2,t,tc,tm))
+	if tc<=t:
+		v-=s1
+	else:
+		v-=s2
+	
+	tc+=1
+	if (tc>tm):
+		tc=0
+		t-=1
+	if(t<0):
+		tm+=1
+		t=tm
+		s1=s2
+		s2=s1-1
+
+plt.plot(out)
+
+
+#LinearBastart
+out=[]
+dx=255
+dy=255
+D=2*dy-dx
+y=0
+for x in range(0,1000):
+	out+=[y]
+	print(dx)
+	if D > 0:
+		y = y + 1
+		D = D - 2*dx
+		dx=dx+255
+	D = D + 2*dy
+
+plt.plot(out)
+
 #True Exponential
 out=[]
 for i in range(0,150):
@@ -98,7 +144,7 @@ for i in range(0,150):
 plt.plot(out)
 
 
-plt.legend(["Repeated Subtract", "Repeated Subtract 2", "Inverse x scale", "Double V", "Buffered Sums", "Exponential"])
+plt.legend(["Repeated Subtract", "Repeated Subtract 2", "Inverse x scale", "Double V", "Buffered Sums", "Overlapping differences", "LinearBastart", "Exponential"])
 plt.show()
 
 p=255
@@ -107,6 +153,7 @@ for i in range(0,255):
 	d=p-v
 	print(" {:08b}  | {:2d} | {:7s}".format(v, d, " "*(7-d)+str(d)))
 	p=v
+
 '''
 New algorithm?:
 
