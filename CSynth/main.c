@@ -53,20 +53,45 @@ u32 NoteMap[] =
 		35115,37203,39415,41759,44242,46873,49660,52613,55741,
 	};
 
+u32 VoiceBuffer[6];
 
-void PlayKey(u8 key)
+
+void PlayKey(u8 key, u8 status)
 {
 	u8 keyNum = -1;
-	for (int i=0; i<20; i++) { if (key==KeyMap[i][0]) { keyNum=KeyMap[i][1]+12*Octave; } }
+	for (u8 i=0; i<20; i++) { if (key==KeyMap[i][0]) { keyNum=KeyMap[i][1]+12*Octave; } }
 	if (keyNum!=(u8)-1)
 	{
-		NoteOn((Reg){.Bits=24,.Value=NoteMap[keyNum]});
-		printf("Play %d [%d]  %d\n", keyNum+1, Octave+1, NoteMap[keyNum]);
+		u32 note = NoteMap[keyNum];
+		if (status)
+		{
+			u8 found = (u8)-1;
+			for(u8 i=0; i<6; i++) { if (VoiceBuffer[i]==0) { found=i; i=6; } }
+			
+			if (found != (u8)-1)
+			{
+				VoiceBuffer[found] = note;
+				NoteOn(REG(note,24), found);
+				printf("Play C(%d) %d [%d]  %d\n", found, keyNum+1, Octave+1, note);
+			}
+		}
+		else
+		{
+			u8 found = (u8)-1;
+			for(u8 i=0; i<6; i++) { if (VoiceBuffer[i]==note) { found=i; i=6; } }
+			
+			if (found != (u8)-1)
+			{
+				VoiceBuffer[found] = 0;
+				NoteOff(found);
+				printf("Stop C(%d) %d [%d]  %d\n", found, keyNum+1, Octave+1, note);
+			}
+		}
 	}
-	else
-	{
-		NoteOff();
-	}
+	// else
+	// {
+	// 	NoteOff(0);
+	// }
 }
 void HandleKeyEvent(u8 key, u8 press)
 {
@@ -74,13 +99,13 @@ void HandleKeyEvent(u8 key, u8 press)
 	{
 		if (key=='.' && Octave<6) { Octave++; printf("Octave %d\n", Octave+1); }
 		if (key==',' && Octave>0) { Octave--; printf("Octave %d\n", Octave+1); }
-		PlayKey(key);
+		PlayKey(key, 1);
 	}
 	else
 	{
-		u8 key=0;
-		for (int i=0; i<127; i++) { if(Keys[i]) {key=i;} }
-		PlayKey(key);
+		//u8 key=0;
+		//for (int i=0; i<127; i++) { if(Keys[i]) {key=i;} }
+		PlayKey(key, 0);
 	}
 }
 
@@ -102,6 +127,15 @@ int main()
 
 	InitPulseAudio();
 	InitSynth();
+	for (u8 i=0; i<6; i++) { VoiceBuffer[i]=0; }
+
+	// Reg n=REG(255,8);
+	// for (int i=255; i>=0; i--)
+	// {
+	// 	Reg v1=RegScale(n,REG(i,8),8);
+	// 	Reg v2=RegScaleShft(n,REG(i,8),8,4);
+	// 	printf("%d | %d  %d\n", i, v1.Value, v2.Value);
+	// }
 
 	printf("Octave %d\n", Octave+1);
 	//OV=11;

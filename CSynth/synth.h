@@ -25,6 +25,9 @@ Reg RegMul(Reg a, Reg b, u8 bits);
 Reg RegDiv(Reg a, Reg b, u8 bits);
 Reg RegMod(Reg a, Reg b, u8 bits);
 
+Reg RegScale(Reg val, Reg scale, u8 bits);
+Reg RegScaleShft(Reg val, Reg scale, u8 bits, u8 shift);
+
 typedef struct 
 {
 	Reg Incr;
@@ -48,6 +51,6 @@ void Tick();
 
 void Output();
 
-void NoteOn(Reg freq);
-void NoteOff();
+void NoteOn(Reg freq, u8 voice);
+void NoteOff(u8 voice);
 
