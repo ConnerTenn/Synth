@@ -15,6 +15,7 @@ for i in range(0,150):
 		counter = 0 #Reset counter
 	counter += 1 #increment counter
 
+plt.plot(out)
 
 v=255
 s=0
@@ -39,7 +40,6 @@ for i in range(0,150):
 	if dy==0: s=1
 
 plt.plot(out)
-plt.legend()
 
 v=255
 c=0
@@ -55,7 +55,6 @@ for i in range(0,150):
 	c+=1
 
 plt.plot(out)
-plt.legend()
 
 v=255
 corner=5
@@ -75,8 +74,21 @@ for i in range(0,150):
 		c+=1
 
 plt.plot(out)
-plt.legend()
 
+
+#Buffered Sums
+out=[]
+buff=[255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255]
+coeff=[[1,1],[1,2],[1,4],[1,4],[2,5]]
+for i in range(0,150):
+	v=0
+	for j in range(0, len(coeff)):
+		v += buff[coeff[j][0]]>>coeff[j][1]
+	print(v)
+	buff = [v]+buff[:-1]
+	out += [v]
+
+plt.plot(out)
 
 #True Exponential
 out=[]
@@ -86,5 +98,50 @@ for i in range(0,150):
 plt.plot(out)
 
 
-plt.legend(["Repeated Subtract", "Repeated Subtract 2", "Inverse x scale", "Double V", "Exponential"])
+plt.legend(["Repeated Subtract", "Repeated Subtract 2", "Inverse x scale", "Double V", "Buffered Sums", "Exponential"])
 plt.show()
+
+p=255
+for i in range(0,255):
+	v=int(255*2**(-i/50))
+	d=p-v
+	print(" {:08b}  | {:2d} | {:7s}".format(v, d, " "*(7-d)+str(d)))
+	p=v
+'''
+New algorithm?:
+
+base_subtract_value
+occasional_period
+next_value = value - base_subtract_value - (1 if occasional_period else 0)
+occasional_period++
+if occasional_period > too_long: reset occasional_period
+
+
+-----,                                                            
+      `-----,                                                     
+             \                                                    
+==================================================================
+             ,------,                                             
+      ,-----`        `--------,                                   
+     /                         \                                  
+==================================================================
+                               ,---------,                        
+                     ,--------`           `----------,            
+                    /                                 \           
+==================================================================
+                                                      ,-----------
+                                          ,----------`            
+                                         /                        
+
+Rate Counter
+	Updated every cycle
+
+A Sub Val
+B Sub Val
+
+Transition Variable
+
+
+Transition variable increments 
+
+'''
