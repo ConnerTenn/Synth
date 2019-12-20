@@ -53,8 +53,8 @@ for i in range(0,2000):
 	out+=[V]
 	if (D>0):
 		V-=1#(V>>2)+1
-		D-=4*255 #Changing this multiplier changes the scale of the decayfactor
-	D+=13*((V>>2)+1) #The multiplier is the decay factor. The larger, the faster the decay
+		D-=8*255 #Changing this multiplier changes the scale of the decayfactor
+	D+=7*V#((V>>2)+1) #The multiplier is the decay factor. The larger, the faster the decay
 
 plt.plot(out)
 
