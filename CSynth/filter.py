@@ -1,7 +1,7 @@
 
 import matplotlib.pyplot as plt
 from scaleTest import scale
-
+from math import *
 
 src=[]
 for i in range(0,1000):
@@ -69,6 +69,40 @@ for s in src:
 	f+=v
 plt.plot(out)
 
-plt.legend(["Src", "Damped Filter", "1st order", "2nd order", "kindabitwise"])
+pi=3.14159265358979323
+
+# out=[]
+# d=10
+# for i in range(0,len(src)):
+# 	s=0
+# 	for j in range(0,len(src)):
+# 		s += src[j] *  ( (sin(pi*(i-j)/d)/(pi*(i-j)/d)) if i-j!=0 else 1) #sinc
+# 	s = s/(d)
+# 	out+=[s]
+# plt.plot(out)
+
+out=[]
+d=10
+for i in range(0,len(src)):
+	s=src[i]
+	for j in range(0,i):
+		s += 2*src[j] * ( sin(pi*(i-j)/d) / (pi*(i-j)/d) ) #sinc
+	s = s/(d)
+	out+=[s]
+plt.plot(out)
+
+out=[127,127,127,127,127]
+# dt=2
+# rc=-0.5
+# a=dt/(rc+dt)
+a=1.5#0.01
+for i in range(1,len(src)):
+	s=src[i]
+	out+=[ a*src[i] + (1-a)*out[i-6] ]
+
+plt.plot(out)
+
+plt.legend(["Src", "Damped Filter", "1st order", "2nd order", "kindabitwise"''', "noncausal"''', "causal", "wiki"])
 plt.show()
+
 
