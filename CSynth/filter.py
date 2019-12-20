@@ -53,6 +53,22 @@ for s in out:
 plt.plot(out2)
 
 
-plt.legend(["Src", "Damped Filter", "1st order", "2nd order"])
+out=[]
+f=0
+v=0
+for s in src:
+	out+=[f]
+	d=s-f
+	# if d>0:
+	# 	v+=0.01
+	# elif d<0:
+	# 	v-=0.01
+	# v=v*0.8
+	v+=int(0.2*(s-f))
+	v=(v>>1)+(v>>2)
+	f+=v
+plt.plot(out)
+
+plt.legend(["Src", "Damped Filter", "1st order", "2nd order", "kindabitwise"])
 plt.show()
 
