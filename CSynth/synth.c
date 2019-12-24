@@ -186,18 +186,18 @@ void Tick()
 	}
 }
 
-Reg Filter(Reg *FilterCoeff, Reg *values)
-{
-	i64 out = FilterCoeff[0].Value * values[0].Value;
-	for (u16 i=1; i<FILTERDEPTH; i++)
-	{
-		out += 2*FilterCoeff[i].Value * values[i].Value;
-		//printf("2*%ld*%ld=%ld %ld\n",FilterCoeff[i].Value,values[i].Value,2*FilterCoeff[i].Value * values[i].Value, (2*FilterCoeff[i].Value * values[i].Value)>>24);
-	}
-	//printf("%d",1/0);
+// Reg Filter(Reg *FilterCoeff, Reg *values)
+// {
+// 	i64 out = FilterCoeff[0].Value * values[0].Value;
+// 	for (u16 i=1; i<FILTERDEPTH; i++)
+// 	{
+// 		out += 2*FilterCoeff[i].Value * values[i].Value;
+// 		//printf("2*%ld*%ld=%ld %ld\n",FilterCoeff[i].Value,values[i].Value,2*FilterCoeff[i].Value * values[i].Value, (2*FilterCoeff[i].Value * values[i].Value)>>24);
+// 	}
+// 	//printf("%d",1/0);
 
-	return REG(out>>24, 24);
-}
+// 	return REG(out>>24, 24);
+// }
 
 void Output()
 {
@@ -212,20 +212,28 @@ void Output()
 		}
 		sum=sum/8;
 
-		static int histskip=0;
-		//Compute value history
-		if (histskip>=200)
-		{
-			for (u16 i=0; i<FILTERDEPTH-1; i++)
-			{
-				ValueBuffer[f][i+1] = ValueBuffer[f][i];
-			}
-			histskip=0;
-		}
-		ValueBuffer[f][0].Value = sum;
-		histskip++;
+		// static int histskip=0;
+		// //Compute value history
+		// if (histskip>=200)
+		// {
+		// 	for (u16 i=0; i<FILTERDEPTH-1; i++)
+		// 	{
+		// 		ValueBuffer[f][i+1] = ValueBuffer[f][i];
+		// 	}
+		// 	histskip=0;
+		// }
+		// ValueBuffer[f][0].Value = sum;
+		// histskip++;
 
-		u64 v = Filter(FilterCoeff[f], ValueBuffer[f]).Value;
+		// u64 v = Filter(FilterCoeff[f], ValueBuffer[f]).Value;
+		double a=0.2;
+		double v = a*sum + (1-a)*ValueBuffer[f][FILTERDEPTH-1].Value;
+
+		for (u16 i=0; i<FILTERDEPTH-1; i++)
+		{
+			ValueBuffer[f][i+1] = ValueBuffer[f][i];
+		}
+		ValueBuffer[f][0].Value = v;
 
 		out += ((u64)U16MAX*v/0xFFFFFF-0x7FFF);
 	}
