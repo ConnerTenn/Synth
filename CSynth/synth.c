@@ -86,20 +86,22 @@ void InitSynth()
 	for (u8 i=0; i<16; i++)
 	{
 		Voices[i] = (Voice){
-				.Oscillator=REG(0,24),
+				.Oscillator=REG(0x7FFFFF,24),
 				.Incr=REG(0,24),
-				.Value=REG(0,24),
+				.Value=REG(0x7FFFFF,24),
 
-				.Waveform=Square,
+				.Waveform=Sawtooth,
 
-				.ADSR={REG(0,24),REG(0,24),REG(0,24),REG(0,24)},
+				.ADSR={100, 100, 0xFFFFFF, 0xFFFF10},
+				.ADSRState=0,
+				.Amp=0,
+				.Gate=0,
 
 				.PulseWidth=REG(0x7FFFFF,24),
 				.Bend=REG(0,24),
 				.Volume=REG(0xFFFFFF,24) 
 				};
 	}
-
 }
 
 void Tick()
@@ -107,9 +109,10 @@ void Tick()
 	for (u8 i=0; i<16; i++)
 	{
 		Voice *voice = &Voices[i];
+		
 		//Waveform Oscillator
 		//If Oscillator overflows with Incr
-		if(RegAdd(RegAdd(voice->Oscillator, voice->Incr,24), voice->Bend, 24).Value & (1<<25))
+		if(RegAdd(RegAdd(voice->Oscillator, voice->Incr,25), voice->Bend, 25).Value & (1<<24))
 		{
 			//reset to 0
 			RegSet(&voice->Oscillator, REG(0,24));
@@ -119,7 +122,7 @@ void Tick()
 			//Else add
 			voice->Oscillator = RegAdd(RegAdd(voice->Oscillator, voice->Incr,24), voice->Bend, 24);
 		}
-
+	
 		//Waveform Generator
 		if (voice->Waveform==Sawtooth)
 		{
@@ -135,21 +138,33 @@ void Tick()
 		}
 		
 		//ADSR
-		switch (voice->ADSRState.Value)
+		if (voice->Gate)
 		{
-		case 0:
-			voice->Amp.Value += voice->ADSR[0].Value;
-			break;
-		case 1:
-			break;
-		case 2:
-			break;
-		case 3:
-			break;
+			if (voice->ADSRState==0)
+			{
+				voice->Amp += voice->ADSR[0];
+				if (voice->Amp>=0xFFFFFF) { voice->Amp=0xFFFFFF; voice->ADSRState=1; }
+				voice->Value.Value = Amplitude24(voice->Value.Value, voice->Amp);
+			}
+			else if (voice->ADSRState==1)
+			{
+				voice->Amp -= voice->ADSR[1];
+				if (voice->Amp<=voice->ADSR[2]) { voice->Amp=voice->ADSR[2]; voice->ADSRState=2; }
+				voice->Value.Value = Amplitude24(voice->Value.Value, voice->Amp);
+			}
+			else
+			{
+				voice->Value.Value = Amplitude24(voice->Value.Value, voice->ADSR[2]);
+			}
+		}
+		else
+		{
+			voice->Amp = voice->Amp * voice->ADSR[3] / 0xFFFFFF; //Fix
+			voice->Value.Value = Amplitude24(voice->Value.Value, voice->Amp);
 		}
 
 		//Volume
-		voice->Value.Value = ((u64)U16MAX*Amplitude24(voice->Value.Value, voice->Volume.Value)/0xFFFFFF-32768);
+		voice->Value.Value = Amplitude24(voice->Value.Value, voice->Volume.Value);
 	}
 }
 
@@ -158,7 +173,7 @@ void Output()
 	i32 sum=0;
 	for (u8 i=0; i<16; i++)
 	{
-		sum += Voices[i].Value.Value;
+		sum += ((u64)U16MAX*Voices[i].Value.Value/0xFFFFFF-0x7FFF);
 	}
 	i16 s=sum/16;
 
@@ -168,15 +183,17 @@ void Output()
 void NoteOn(Reg freq, u8 voice)
 {
 	RegSet(&Voices[voice].Incr, freq);
-	RegSet(&Voices[voice].Oscillator, REG(0x1000000/2,24));
-	Voices[voice].ADSRState.Value=0;
-	Voices[voice].Amp.Value=0;
+	RegSet(&Voices[voice].Oscillator, REG(0x7FFFFF,24));
+	Voices[voice].ADSRState=0;
+	Voices[voice].Amp=0;
+	Voices[voice].Gate=1;
 }
 
 void NoteOff(u8 voice)
 {
-	RegSet(&Voices[voice].Incr, REG(0,24));
-	RegSet(&Voices[voice].Oscillator, REG(0x1000000/2,24));
+	//RegSet(&Voices[voice].Incr, REG(0,24));
+	//RegSet(&Voices[voice].Oscillator, REG(0x7FFFFF,24));
+	Voices[voice].Gate=0;
 }
 
 

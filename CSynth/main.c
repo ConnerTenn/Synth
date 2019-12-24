@@ -66,7 +66,7 @@ void PlayKey(u8 key, u8 status)
 		if (status)
 		{
 			u8 found = (u8)-1;
-			for(u8 i=0; i<6; i++) { if (VoiceBuffer[i]==0) { found=i; i=6; } }
+			for(u8 i=0; i<6; i++) { if (Voices[i].Amp==0) { found=i; i=6; } }
 			
 			if (found != (u8)-1)
 			{

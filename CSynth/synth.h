@@ -37,14 +37,15 @@ typedef struct
 
 	u8 Waveform;
 
-	Reg ADSR[4];
-	Reg ADSRState;
-	Reg Amp;
+	u64 ADSR[4]; //Fix Type
+	u8 ADSRState;
+	u64 Amp; //Fix Type
+	u8 Gate;
 
 	Reg PulseWidth;
 	Reg Bend;
 	Reg Volume;
-} Voice;
+} Voice; //Fix Note On/Off
 
 typedef struct 
 {
@@ -66,6 +67,8 @@ LFO 0      0         1      |     2         3
 LFO 1      4         5      |     x         x
 
 */
+
+extern Voice Voices[16];
 
 void InitSynth();
 
