@@ -90,7 +90,7 @@ void InitSynth()
 				.Incr=REG(0,24),
 				.Value=REG(0x7FFFFF,24),
 
-				.Waveform=Sawtooth,
+				.Waveform=Square,
 
 				.ADSR={100, 100, 0xFFFFFF, 0xFFFF10},
 				.ADSRState=0,
@@ -101,6 +101,24 @@ void InitSynth()
 				.Bend=REG(0,24),
 				.Volume=REG(0xFFFFFF,24) 
 				};
+	}
+
+	double d=1000;
+	for (u8 f=0; f<2; f++)
+	{
+		for (u16 i=0; i<FILTERDEPTH; i++)
+		{
+			FilterCoeff[f][i]=REG(0,24);
+			ValueBuffer[f][i]=REG(0,24);
+
+			if (i!=0)
+			{
+				double v = ( sin(PI*(i)/d) / (PI*(i)/d) )/d;
+				FilterCoeff[f][i] = REG((u64)(0xFFFFFF*v), 24);
+			}
+		}
+
+		FilterCoeff[f][0]=REG((u64)(0xFFFFFF/d),24);
 	}
 }
 
@@ -168,14 +186,50 @@ void Tick()
 	}
 }
 
+Reg Filter(Reg *FilterCoeff, Reg *values)
+{
+	i64 out = FilterCoeff[0].Value * values[0].Value;
+	for (u16 i=1; i<FILTERDEPTH; i++)
+	{
+		out += 2*FilterCoeff[i].Value * values[i].Value;
+		//printf("2*%ld*%ld=%ld %ld\n",FilterCoeff[i].Value,values[i].Value,2*FilterCoeff[i].Value * values[i].Value, (2*FilterCoeff[i].Value * values[i].Value)>>24);
+	}
+	//printf("%d",1/0);
+
+	return REG(out>>24, 24);
+}
+
 void Output()
 {
-	i32 sum=0;
-	for (u8 i=0; i<16; i++)
+	i32 out = 0;
+	for (u8 f=0; f<2; f++)
 	{
-		sum += ((u64)U16MAX*Voices[i].Value.Value/0xFFFFFF-0x7FFF);
+		//Mix 8 channels
+		u64 sum = 0;
+		for (u8 i=0; i<8; i++)
+		{
+			sum += Voices[i+f*8].Value.Value;
+		}
+		sum=sum/8;
+
+		static int histskip=0;
+		//Compute value history
+		if (histskip>=200)
+		{
+			for (u16 i=0; i<FILTERDEPTH-1; i++)
+			{
+				ValueBuffer[f][i+1] = ValueBuffer[f][i];
+			}
+			histskip=0;
+		}
+		ValueBuffer[f][0].Value = sum;
+		histskip++;
+
+		u64 v = Filter(FilterCoeff[f], ValueBuffer[f]).Value;
+
+		out += ((u64)U16MAX*v/0xFFFFFF-0x7FFF);
 	}
-	i16 s=sum/16;
+	i16 s=out/2;
 
 	PulseWrite((u8 *)&s, 1*sizeof(i16));
 }
@@ -197,3 +251,12 @@ void NoteOff(u8 voice)
 }
 
 
+void SetReg(u8 regset, u8 reg, Reg value)
+{
+	if (regset<16) //Voice Registers
+	{
+		if (reg==0) { Voices[regset].Oscillator=value; }
+		if (reg==1) { Voices[regset].Incr=value; }
+	}
+	//else if (regset==16
+}
