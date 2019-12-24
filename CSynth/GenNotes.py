@@ -1,5 +1,5 @@
 
-SampleRate=44800
+#SampleRate=44800
 UpdateFreq=1000000
 Bits=24
 

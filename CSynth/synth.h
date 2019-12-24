@@ -28,22 +28,44 @@ Reg RegMod(Reg a, Reg b, u8 bits);
 Reg RegScale(Reg val, Reg scale, u8 bits);
 Reg RegScaleShft(Reg val, Reg scale, u8 bits, u8 shift);
 
-typedef struct 
-{
-	Reg Incr;
-	Reg Oscillator;
-	Reg PulseWidth;
-	Reg Bend;
-	u8 Type;
-	
-} Waveform;
 
 typedef struct 
 {
-	Waveform HFO;
-	Waveform LFO;
-	u8 LFOMod;
-} WaveformGenerator;
+	Reg Oscillator;
+	Reg Incr;
+	Reg Value;
+
+	u8 Waveform;
+
+	Reg ADSR[4];
+	Reg ADSRState;
+	Reg Amp;
+
+	Reg PulseWidth;
+	Reg Bend;
+	Reg Volume;
+} Voice;
+
+typedef struct 
+{
+	Reg Oscillator;
+	Reg Incr;
+	Reg Value;
+
+	u8 Waveform;
+
+	Reg PulseWidth;
+	Reg Amplitude;
+} LFO;
+
+/* LFO matrix
+
+            voice 0->7            voice 7->16
+       frequency pulsewidth | frequency pulsewidth
+LFO 0      0         1      |     2         3
+LFO 1      4         5      |     x         x
+
+*/
 
 void InitSynth();
 
@@ -53,4 +75,21 @@ void Output();
 
 void NoteOn(Reg freq, u8 voice);
 void NoteOff(u8 voice);
+//void Ctrl(u8 voice, Reg frequency, Reg 
 
+void SetReg(u8 regset, u8 reg, Reg value);
+Reg GetReg(u8 regset, u8 reg);
+
+
+/*
+== Voice ==
+Oscillator -> Waveform -> ADSR -> volume -> Out
+    |                      |
+  bend                    gate
+
+
+== Synth ==
+
+Voice 0-7  -> [+] -> filter -[+] -> out
+Voice 8-15 -> [+] -> filter --^
+*/

@@ -114,6 +114,7 @@ Window Win;
 void InteruptHandler(int arg) { Run=0; }
 int main()
 {
+
 	signal(SIGINT, InteruptHandler); signal(SIGKILL, InteruptHandler);
 	set_conio_terminal_mode();
 
