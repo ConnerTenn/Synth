@@ -79,67 +79,187 @@ u32 Amplitude24(u32 val, u32 amp)
 	return (u32)(((u64)amp*val+(u64)0xFFFFFF*0xFFFFFF/2-(u64)amp*0xFFFFFF/2)/(u64)0xFFFFFF);
 }
 
-Waveform WF[6];
+Voice Voices[16];
 
 void InitSynth()
 {
-	for (u8 i=0; i<6; i++)
+	for (u8 i=0; i<16; i++)
 	{
-		WF[i] = (Waveform){
+		Voices[i] = (Voice){
+				.Oscillator=REG(0x7FFFFF,24),
 				.Incr=REG(0,24),
-				.Oscillator=REG(0,24),
-				.PulseWidth=REG(0,24),
-				.Bend=REG(0,24) };
-		NoteOff(6);
+				.Value=REG(0x7FFFFF,24),
+
+				.Waveform=Square,
+
+				.ADSR={100, 100, 0xFFFFFF, 0xFFFF10},
+				.ADSRState=0,
+				.Amp=0,
+				.Gate=0,
+
+				.PulseWidth=REG(0x7FFFFF,24),
+				.Bend=REG(0,24),
+				.Volume=REG(0xFFFFFF,24) 
+				};
 	}
 
+	double d=100;
+	for (u8 f=0; f<2; f++)
+	{
+		FilterCoeff[f][0]=REG((u64)(0xFFFFFF/d),24);
+		for (u16 i=1; i<FILTERDEPTH; i++)
+		{
+			double v = ( sin(PI*(i)/d) / (PI*(i)/d) )/d;
+			FilterCoeff[f][i] = REG((u64)(0xFFFFFF*v), 24);
+		}
+
+		for (u16 i=0; i<FILTERDEPTH*FILTERSKIP; i++)
+		{
+			ValueBuffer[f][i]=REG(0,24);
+		}
+	}
 }
 
 void Tick()
 {
-	for (u8 i=0; i<6; i++)
+	for (u8 i=0; i<16; i++)
 	{
+		Voice *voice = &Voices[i];
+		
+		//Waveform Oscillator
 		//If Oscillator overflows with Incr
-		if(RegAdd(WF[i].Oscillator, WF[i].Incr,25).Value&(1<<25))
+		if(RegAdd(RegAdd(voice->Oscillator, voice->Incr,25), voice->Bend, 25).Value & (1<<24))
 		{
 			//reset to 0
-			RegSet(&WF[i].Oscillator, REG(0,24));
+			RegSet(&voice->Oscillator, REG(0,24));
 		}
 		else
 		{
 			//Else add
-			WF[i].Oscillator=RegAdd(WF[i].Oscillator, WF[i].Incr,24);
+			voice->Oscillator = RegAdd(RegAdd(voice->Oscillator, voice->Incr,24), voice->Bend, 24);
 		}
+	
+		//Waveform Generator
+		if (voice->Waveform==Sawtooth)
+		{
+			voice->Value=voice->Oscillator;
+		}
+		else if (voice->Waveform==Square)
+		{
+			voice->Value.Value = voice->Oscillator.Value > voice->PulseWidth.Value ? 0xFFFFFF : 0;
+		}
+		else if (voice->Waveform==Triangle)
+		{
+			voice->Value.Value = voice->Oscillator.Value > voice->PulseWidth.Value ? 0xFFFFFF : 0;
+		}
+		
+		//ADSR
+		if (voice->Gate)
+		{
+			if (voice->ADSRState==0)
+			{
+				voice->Amp += voice->ADSR[0];
+				if (voice->Amp>=0xFFFFFF) { voice->Amp=0xFFFFFF; voice->ADSRState=1; }
+				voice->Value.Value = Amplitude24(voice->Value.Value, voice->Amp);
+			}
+			else if (voice->ADSRState==1)
+			{
+				voice->Amp -= voice->ADSR[1];
+				if (voice->Amp<=voice->ADSR[2]) { voice->Amp=voice->ADSR[2]; voice->ADSRState=2; }
+				voice->Value.Value = Amplitude24(voice->Value.Value, voice->Amp);
+			}
+			else
+			{
+				voice->Value.Value = Amplitude24(voice->Value.Value, voice->ADSR[2]);
+			}
+		}
+		else
+		{
+			voice->Amp = voice->Amp * voice->ADSR[3] / 0xFFFFFF; //Fix
+			voice->Value.Value = Amplitude24(voice->Value.Value, voice->Amp);
+		}
+
+		//Volume
+		voice->Value.Value = Amplitude24(voice->Value.Value, voice->Volume.Value);
 	}
+}
+
+u16 ValBuffStart=0;
+Reg Filter(Reg *FilterCoeff, Reg *values)
+{
+	i64 out = FilterCoeff[0].Value * values[ValBuffStart].Value;
+	for (u16 i=1; i<FILTERDEPTH; i++)
+	{
+		out += 2*FilterCoeff[i].Value * values[(ValBuffStart+i*FILTERSKIP)%(FILTERDEPTH*FILTERSKIP)].Value;
+		//printf("2*%ld*%ld=%ld %ld\n",FilterCoeff[i].Value,values[i].Value,2*FilterCoeff[i].Value * values[i].Value, (2*FilterCoeff[i].Value * values[i].Value)>>24);
+	}
+	//printf("%d",1/0);
+
+	return REG(out>>24, 24);
 }
 
 void Output()
 {
-	u32 v = (0xFFFFFF/5);
-	//i16 s = (0xFFFF*((u64)v*WC-v*0xFFFFFF/2)/0xFFFFFF)/0xFFFFFF;
-	
-	i32 sum=0;
-	for (u8 i=0; i<6; i++)
+	i32 out = 0;
+	for (u8 f=0; f<2; f++)
 	{
-		u64 val = WF[i].Oscillator.Value;
-		//val=val>8388608?0xFFFFFF:0;
-		sum += ((u64)U16MAX*Amplitude24(val, v)/0xFFFFFF-32768);
+		//Mix 8 channels
+		u64 sum = 0;
+		for (u8 i=0; i<8; i++)
+		{
+			sum += Voices[i+f*8].Value.Value;
+		}
+		sum=sum/8;
+
+		//Compute value history
+		// for (u16 i=0; i<FILTERDEPTH*FILTERSKIP-1; i++)
+		// {
+		// 	ValueBuffer[f][i+1] = ValueBuffer[f][i];
+		// }
+		// ValueBuffer[f][0].Value = sum;
+		ValBuffStart = (ValBuffStart>0 ? ValBuffStart-1 : FILTERDEPTH*FILTERSKIP-1);
+		ValueBuffer[f][ValBuffStart].Value = sum;
+
+		u64 v = Filter(FilterCoeff[f], ValueBuffer[f]).Value;
+		// double a=0.2;
+		// double v = a*sum + (1-a)*ValueBuffer[f][FILTERDEPTH-1].Value;
+
+		// for (u16 i=0; i<FILTERDEPTH-1; i++)
+		// {
+		// 	ValueBuffer[f][i+1] = ValueBuffer[f][i];
+		// }
+		// ValueBuffer[f][0].Value = v;
+
+		out += ((u64)U16MAX*v/0xFFFFFF-0x7FFF);
 	}
-	i16 s=sum/6;
+	i16 s=out/2;
 
 	PulseWrite((u8 *)&s, 1*sizeof(i16));
 }
 
 void NoteOn(Reg freq, u8 voice)
 {
-	RegSet(&WF[voice].Incr, freq);
-	RegSet(&WF[voice].Oscillator, REG(0x1000000/2,24));
+	RegSet(&Voices[voice].Incr, freq);
+	RegSet(&Voices[voice].Oscillator, REG(0x7FFFFF,24));
+	Voices[voice].ADSRState=0;
+	Voices[voice].Amp=0;
+	Voices[voice].Gate=1;
 }
 
 void NoteOff(u8 voice)
 {
-	RegSet(&WF[voice].Incr, REG(0,24));
-	RegSet(&WF[voice].Oscillator, REG(0x1000000/2,24));
+	//RegSet(&Voices[voice].Incr, REG(0,24));
+	//RegSet(&Voices[voice].Oscillator, REG(0x7FFFFF,24));
+	Voices[voice].Gate=0;
 }
 
 
+void SetReg(u8 regset, u8 reg, Reg value)
+{
+	if (regset<16) //Voice Registers
+	{
+		if (reg==0) { Voices[regset].Oscillator=value; }
+		if (reg==1) { Voices[regset].Incr=value; }
+	}
+	//else if (regset==16
+}
