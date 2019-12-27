@@ -103,22 +103,20 @@ void InitSynth()
 				};
 	}
 
-	double d=1000;
+	double d=100;
 	for (u8 f=0; f<2; f++)
 	{
-		for (u16 i=0; i<FILTERDEPTH; i++)
+		FilterCoeff[f][0]=REG((u64)(0xFFFFFF/d),24);
+		for (u16 i=1; i<FILTERDEPTH; i++)
 		{
-			FilterCoeff[f][i]=REG(0,24);
-			ValueBuffer[f][i]=REG(0,24);
-
-			if (i!=0)
-			{
-				double v = ( sin(PI*(i)/d) / (PI*(i)/d) )/d;
-				FilterCoeff[f][i] = REG((u64)(0xFFFFFF*v), 24);
-			}
+			double v = ( sin(PI*(i)/d) / (PI*(i)/d) )/d;
+			FilterCoeff[f][i] = REG((u64)(0xFFFFFF*v), 24);
 		}
 
-		FilterCoeff[f][0]=REG((u64)(0xFFFFFF/d),24);
+		for (u16 i=0; i<FILTERDEPTH*FILTERSKIP; i++)
+		{
+			ValueBuffer[f][i]=REG(0,24);
+		}
 	}
 }
 
@@ -186,18 +184,19 @@ void Tick()
 	}
 }
 
-// Reg Filter(Reg *FilterCoeff, Reg *values)
-// {
-// 	i64 out = FilterCoeff[0].Value * values[0].Value;
-// 	for (u16 i=1; i<FILTERDEPTH; i++)
-// 	{
-// 		out += 2*FilterCoeff[i].Value * values[i].Value;
-// 		//printf("2*%ld*%ld=%ld %ld\n",FilterCoeff[i].Value,values[i].Value,2*FilterCoeff[i].Value * values[i].Value, (2*FilterCoeff[i].Value * values[i].Value)>>24);
-// 	}
-// 	//printf("%d",1/0);
+u16 ValBuffStart=0;
+Reg Filter(Reg *FilterCoeff, Reg *values)
+{
+	i64 out = FilterCoeff[0].Value * values[ValBuffStart].Value;
+	for (u16 i=1; i<FILTERDEPTH; i++)
+	{
+		out += 2*FilterCoeff[i].Value * values[(ValBuffStart+i*FILTERSKIP)%(FILTERDEPTH*FILTERSKIP)].Value;
+		//printf("2*%ld*%ld=%ld %ld\n",FilterCoeff[i].Value,values[i].Value,2*FilterCoeff[i].Value * values[i].Value, (2*FilterCoeff[i].Value * values[i].Value)>>24);
+	}
+	//printf("%d",1/0);
 
-// 	return REG(out>>24, 24);
-// }
+	return REG(out>>24, 24);
+}
 
 void Output()
 {
@@ -212,28 +211,24 @@ void Output()
 		}
 		sum=sum/8;
 
-		// static int histskip=0;
-		// //Compute value history
-		// if (histskip>=200)
+		//Compute value history
+		// for (u16 i=0; i<FILTERDEPTH*FILTERSKIP-1; i++)
 		// {
-		// 	for (u16 i=0; i<FILTERDEPTH-1; i++)
-		// 	{
-		// 		ValueBuffer[f][i+1] = ValueBuffer[f][i];
-		// 	}
-		// 	histskip=0;
+		// 	ValueBuffer[f][i+1] = ValueBuffer[f][i];
 		// }
 		// ValueBuffer[f][0].Value = sum;
-		// histskip++;
+		ValBuffStart = (ValBuffStart>0 ? ValBuffStart-1 : FILTERDEPTH*FILTERSKIP-1);
+		ValueBuffer[f][ValBuffStart].Value = sum;
 
-		// u64 v = Filter(FilterCoeff[f], ValueBuffer[f]).Value;
-		double a=0.2;
-		double v = a*sum + (1-a)*ValueBuffer[f][FILTERDEPTH-1].Value;
+		u64 v = Filter(FilterCoeff[f], ValueBuffer[f]).Value;
+		// double a=0.2;
+		// double v = a*sum + (1-a)*ValueBuffer[f][FILTERDEPTH-1].Value;
 
-		for (u16 i=0; i<FILTERDEPTH-1; i++)
-		{
-			ValueBuffer[f][i+1] = ValueBuffer[f][i];
-		}
-		ValueBuffer[f][0].Value = v;
+		// for (u16 i=0; i<FILTERDEPTH-1; i++)
+		// {
+		// 	ValueBuffer[f][i+1] = ValueBuffer[f][i];
+		// }
+		// ValueBuffer[f][0].Value = v;
 
 		out += ((u64)U16MAX*v/0xFFFFFF-0x7FFF);
 	}

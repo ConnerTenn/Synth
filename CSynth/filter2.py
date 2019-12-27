@@ -30,8 +30,8 @@ handle,=plt.plot(src, label="Src"); legend+=[handle]
 
 print("Filter 2")
 out=[]
-d=100
-skip=4
+d=1
+skip=50
 sinc=[1/d]
 for i in range(1,255):
 	sinc += [ ( sin(pi*(i)/d) / (pi*(i)/d) )/d ] #sinc
@@ -51,8 +51,26 @@ for i in range(1,len(src)):
 	out+=[ a*src[i] + (1-a)*out[i-1] ]
 handle,=plt.plot(out, label="2ValFilter"); legend+=[handle]
 
-plt.legend(handles=legend)
 
+# print("Filter 4")
+# out=[]
+# d=20
+# skip=10
+# sinc=[1/d]
+# for i in range(1,255):
+# 	sinc += [ ( sin(pi*(i)/d) / (pi*(i)/d) )/d ] #sinc
+# buff=[0]*len(sinc)
+
+# for i in range(0,len(src)):
+# 	s=sinc[0]*src[i]
+# 	for j in range(1,len(sinc)):
+# 		s += 2*buff[j-1] * sinc[j]
+# 	if i%skip == 0:
+# 		buff=[src[i]]+buff[1:]
+# 	out+=[s]
+# handle,=plt.plot(out, label="CrappyFilter"); legend+=[handle]
+
+plt.legend(handles=legend)
 
 print("Show")
 plt.show()
