@@ -257,7 +257,7 @@ void NoteOff(u8 voice)
 }
 
 char *regnames[]={"oscillator", "incr", "waveform", "", "", "", "", "trigger", "", "", "volume"};
-void SetReg(u8 regset, u8 reg, u64 value)
+void SetReg(u8 regset, u8 reg, u32 value)
 {
 	printf("regset:%2d  reg:%2d (%-10s)  val:%-7d (0x%06X)\n", regset, reg, regnames[reg], value, value);
 

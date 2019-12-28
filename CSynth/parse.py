@@ -92,9 +92,9 @@ for cmd in cmdout:
 		ofile.write(cmd[0].to_bytes(1,"little"))
 	if len(cmd)==2:
 		ofile.write(cmd[0].to_bytes(1,"little"))
-		ofile.write(cmd[1].to_bytes(8,"little"))
+		ofile.write(cmd[1].to_bytes(4,"little"))
 	if len(cmd)==3:
 		ofile.write(cmd[0].to_bytes(1,"little"))
 		ofile.write(cmd[1].to_bytes(1,"little"))
-		ofile.write(cmd[2].to_bytes(8,"little"))
+		ofile.write(cmd[2].to_bytes(4,"little"))
 

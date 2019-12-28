@@ -88,7 +88,7 @@ void NoteOn(Reg freq, u8 voice);
 void NoteOff(u8 voice);
 //void Ctrl(u8 voice, Reg frequency, Reg 
 
-void SetReg(u8 regset, u8 reg, u64 value);
+void SetReg(u8 regset, u8 reg, u32 value);
 Reg GetReg(u8 regset, u8 reg);
 
 

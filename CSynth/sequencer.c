@@ -63,16 +63,16 @@ void PlaySequence()
 					}
 					else if (regset==17)
 					{
-						u64 value;
-						fread(&value, sizeof(u64), 1, SFile);
+						u32 value;
+						fread(&value, sizeof(u32), 1, SFile);
 						Delay=value;
 						printf("Delay: %d\n", Delay);
 					}
 					else
 					{
-						u8 reg; u64 value;
+						u8 reg; u32 value;
 						fread(&reg, sizeof(u8), 1, SFile);
-						fread(&value, sizeof(u64), 1, SFile);
+						fread(&value, sizeof(u32), 1, SFile);
 
 						SetReg(regset, reg, value);
 					}
