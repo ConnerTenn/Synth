@@ -25,7 +25,7 @@ waveforms={"SAW":0,"SQU":1,"TRI":2,"RND":4,"SIN":3,"SAM":5}
 
 cmdout=[]
 
-regnames={"null":0, "oscillator":0, "incr":1, "waveform":2, "trigger":7, "volume":10}
+regnames={"null":0, "oscillator":0, "incr":1, "waveform":2, "attack":3, "decay":4, "sustain":5, "release":6, "trigger":7, "volume":10}
 def setcmd(regset,name,value):
 	global cmdout
 	cmdout+=[ [regset,regnames[name], value] ]
@@ -38,6 +38,16 @@ def setcmd1(regset):
 	global cmdout
 	cmdout+=[ [regset] ]
 
+def parseint(numstr):
+	numstr=numstr.strip()
+	try:
+		return int(numstr)
+	except:
+		try:
+			return int(numstr, 16)
+		except:
+			return numstr
+
 nodel=False
 for line in ifile:
 	line=line.strip().split("#")[0]
@@ -45,18 +55,16 @@ for line in ifile:
 		cmd=cmd.strip().upper()
 		if len(cmd):
 			nodel=False
-			voice="0"; ins=""; arg=""
+			voice="0"; ins=""; arg=[""]
 			s=cmd.split(":")
 			voice=s[0]
 			if len(s)==2:
 				s=s[1].split(",")
 				ins=s[0]
-				if len(s)==2:
-					arg=s[1]
-			try:
-				voice=int(voice)
-			except:
-				pass
+				if len(s)>=2:
+					arg=s[1:]
+			
+			voice=parseint(voice)
 
 			if ins.upper() in waveforms:
 				#cmdout+=[ [voice,waveforms[ins.upper()]] ]
@@ -71,15 +79,20 @@ for line in ifile:
 			if ins=="STOP":
 				pass
 			if ins=="VOL":
-				setcmd(voice+1,"volume",int(arg))
+				setcmd(voice+1,"volume",parseint(arg[0]))
+			if ins=="ADSR":
+				setcmd(voice+1,"attack",parseint(arg[0]))
+				setcmd(voice+1,"decay",parseint(arg[1]))
+				setcmd(voice+1,"sustain",parseint(arg[2]))
+				setcmd(voice+1,"release",parseint(arg[3]))
 			if voice=="DELAY":
-				setcmd2(17,int(ins))
+				setcmd2(17,parseint(ins))
 			if cmd=="\\":
 				nodel=True
 			if cmd=="END":
 				setcmd1(255)
 
-			print(cmd)
+			print("\"{}\"  [{}]:{} {}".format(cmd,voice,ins,arg))
 	if len(line) and not nodel:
 		setcmd1(0)
 		print()

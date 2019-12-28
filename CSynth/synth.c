@@ -92,7 +92,8 @@ void InitSynth()
 
 				.Waveform=Square,
 
-				.ADSR={100, 100, 0xFFFFFF, 0xFFFF10},
+				//.ADSR={100, 0xFFFFC0, 0*0x1FFFFF, 0xFFFF10},
+				.ADSR={20, 0xFFFFE0, 0*0x1FFFFF, 0xFFFF10},
 				.ADSRState=0,
 				.Amp=0,
 				.Gate=0,
@@ -157,24 +158,25 @@ void Tick()
 		//ADSR
 		if (voice->Gate)
 		{
-			if (voice->ADSRState==0)
+			if (voice->ADSRState==0) //Attack
 			{
 				voice->Amp += voice->ADSR[0];
 				if (voice->Amp>=0xFFFFFF) { voice->Amp=0xFFFFFF; voice->ADSRState=1; }
 				voice->Value.Value = Amplitude24(voice->Value.Value, voice->Amp);
 			}
-			else if (voice->ADSRState==1)
+			else if (voice->ADSRState==1) //Decay
 			{
-				voice->Amp -= voice->ADSR[1];
-				if (voice->Amp<=voice->ADSR[2]) { voice->Amp=voice->ADSR[2]; voice->ADSRState=2; }
+				// voice->Amp -= voice->ADSR[1];
+				// if (voice->Amp<=voice->ADSR[2] || voice->Amp>0xFFFFFFF) { voice->Amp=voice->ADSR[2]; voice->ADSRState=2; }
+				voice->Amp = (voice->Amp-voice->ADSR[2]) * voice->ADSR[1] / 0xFFFFFF + voice->ADSR[2]; //Fix
 				voice->Value.Value = Amplitude24(voice->Value.Value, voice->Amp);
 			}
-			else
+			else //Systain
 			{
 				voice->Value.Value = Amplitude24(voice->Value.Value, voice->ADSR[2]);
 			}
 		}
-		else
+		else //Release
 		{
 			voice->Amp = voice->Amp * voice->ADSR[3] / 0xFFFFFF; //Fix
 			voice->Value.Value = Amplitude24(voice->Value.Value, voice->Amp);
@@ -256,39 +258,39 @@ void NoteOff(u8 voice)
 	Voices[voice].Gate=0;
 }
 
-char *regnames[]={"oscillator", "incr", "waveform", "", "", "", "", "trigger", "", "", "volume"};
+char *regnames[]={"oscillator", "incr", "waveform", "attack", "decay", "sustain", "release", "trigger", "", "", "volume"};
 void SetReg(u8 regset, u8 reg, u32 value)
 {
 	printf("regset:%2d  reg:%2d (%-10s)  val:%-7d (0x%06X)\n", regset, reg, regnames[reg], value, value);
 
 	if (regset>=1 && regset<=16) //Voice Registers
 	{
-		if (reg==0) { Voices[regset].Oscillator.Value=value; }
-		if (reg==1) { Voices[regset].Incr.Value=value; }
-		if (reg==2) { Voices[regset].Waveform=value; }
+		if (reg==0) { Voices[regset-1].Oscillator.Value=value; }
+		if (reg==1) { Voices[regset-1].Incr.Value=value; }
+		if (reg==2) { Voices[regset-1].Waveform=value; }
 		
-		if (reg==3) { Voices[regset].ADSR[0]=value; }
-		if (reg==4) { Voices[regset].ADSR[1]=value; }
-		if (reg==5) { Voices[regset].ADSR[2]=value; }
-		if (reg==6) { Voices[regset].ADSR[3]=value; }
+		if (reg==3) { Voices[regset-1].ADSR[0]=value; }
+		if (reg==4) { Voices[regset-1].ADSR[1]=value; }
+		if (reg==5) { Voices[regset-1].ADSR[2]=value; }
+		if (reg==6) { Voices[regset-1].ADSR[3]=value; }
 
 		if (reg==7) 
 		{ 
 			if (value)
 			{
-				Voices[regset].ADSRState=0;	
-				Voices[regset].Amp=0;
-				Voices[regset].Gate=1;
+				Voices[regset-1].ADSRState=0;	
+				///Voices[regset].Amp=0;
+				Voices[regset-1].Gate=1;
 			}
 			else
 			{
-				Voices[regset].Gate=0;
+				Voices[regset-1].Gate=0;
 			}
 		}
 
-		if (reg==8) { Voices[regset].PulseWidth.Value=value; }
-		if (reg==9) { Voices[regset].Bend.Value=value; }
-		if (reg==10) { Voices[regset].Volume.Value=value; }
+		if (reg==8) { Voices[regset-1].PulseWidth.Value=value; }
+		if (reg==9) { Voices[regset-1].Bend.Value=value; }
+		if (reg==10) { Voices[regset-1].Volume.Value=value; }
 	}
 	//else if (regset==16
 }
