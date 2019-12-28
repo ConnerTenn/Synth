@@ -256,10 +256,10 @@ void NoteOff(u8 voice)
 	Voices[voice].Gate=0;
 }
 
-
+char *regnames[]={"oscillator", "incr", "waveform", "", "", "", "", "trigger", "", "", "volume"};
 void SetReg(u8 regset, u8 reg, u64 value)
 {
-	printf("regset:%d  reg:%d  val:%d(%X)\n", regset, reg, value, value);
+	printf("regset:%2d  reg:%2d (%-10s)  val:%-7d (0x%06X)\n", regset, reg, regnames[reg], value, value);
 
 	if (regset>=1 && regset<=16) //Voice Registers
 	{

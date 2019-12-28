@@ -16,8 +16,6 @@ u8 InitSequencer(char *file)
 
 void CloseSequencer()
 {
-	printf("\nClosing Sequencer\n");
-
 	fclose(SFile);
 }
 
@@ -54,7 +52,7 @@ void PlaySequence()
 				{
 					if (!regset)
 					{
-						printf("Delay\n");
+						printf("Delay %d.%dms\n", Delay/1000, (Delay/100)%10);
 						delaytimer=sample+Delay;
 						update=0;
 					}
@@ -68,6 +66,7 @@ void PlaySequence()
 						u64 value;
 						fread(&value, sizeof(u64), 1, SFile);
 						Delay=value;
+						printf("Delay: %d\n", Delay);
 					}
 					else
 					{
