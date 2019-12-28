@@ -113,23 +113,35 @@ void HandleKeyEvent(u8 key, u8 press)
 Display *Disp;
 Window Win;
 void InteruptHandler(int arg) { Run=0; }
-int main(int argc, char *argv)
+int main(int argc, char **argv)
 {
-
+	printf("\nSetting up...\n");
 	signal(SIGINT, InteruptHandler); signal(SIGKILL, InteruptHandler);
 	set_conio_terminal_mode();
 
-	Disp = XOpenDisplay(0);
-	Win = (Window)atoi(getenv("WINDOWID"));
-	XSelectInput(Disp, Win, KeyPressMask | KeyReleaseMask);
-	XMapWindow(Disp, Win);
-	XFlush(Disp);
+	// Disp = XOpenDisplay(0);
+	// Win = (Window)atoi(getenv("WINDOWID"));
+	// XSelectInput(Disp, Win, KeyPressMask | KeyReleaseMask);
+	// XMapWindow(Disp, Win);
+	// XFlush(Disp);
 
 	for (int i=0; i<127; i++) { Keys[i]=0; }
 
 	InitPulseAudio();
 	InitSynth();
-	for (u8 i=0; i<6; i++) { VoiceBuffer[i]=0; }
+
+	if (argc!=2) { printf("\nError: need input synth file\n"); }
+	else
+	{
+		if (InitSequencer(argv[1]))
+		{
+			PlaySequence();
+		}
+	}
+	
+	CloseSequencer();
+
+	// for (u8 i=0; i<6; i++) { VoiceBuffer[i]=0; }
 
 	// Reg n=REG(255,8);
 	// for (int i=255; i>=0; i--)
@@ -139,52 +151,52 @@ int main(int argc, char *argv)
 	// 	printf("%d | %d  %d\n", i, v1.Value, v2.Value);
 	// }
 
-	printf("Octave %d\n", Octave+1);
-	//OV=11;
-	while(Run) 
-	{
-		XEvent event;
-		while (XPending(Disp))
-		{
-			XNextEvent(Disp, &event);
-			u64 key = (long)XLookupKeysym(&event.xkey, 0);
+	// printf("Octave %d\n", Octave+1);
+	// //OV=11;
+	// while(Run) 
+	// {
+	// 	XEvent event;
+	// 	while (XPending(Disp))
+	// 	{
+	// 		XNextEvent(Disp, &event);
+	// 		u64 key = (long)XLookupKeysym(&event.xkey, 0);
 
-			if (event.type == KeyPress )
-			{
-				if (0<=key && key<=127 && Keys[key]==0)
-				{
-					Keys[key]=1;
-					//printf("Press #%ld\n", key);
-					HandleKeyEvent(key, 1);
-				}
-			}
-			if (event.type == KeyRelease)
-			{
-				u8 repeat=0;
-				if (XEventsQueued(Disp, QueuedAfterReading))
-				{
-					XEvent nev;
-					XPeekEvent(Disp, &nev);
+	// 		if (event.type == KeyPress )
+	// 		{
+	// 			if (0<=key && key<=127 && Keys[key]==0)
+	// 			{
+	// 				Keys[key]=1;
+	// 				//printf("Press #%ld\n", key);
+	// 				HandleKeyEvent(key, 1);
+	// 			}
+	// 		}
+	// 		if (event.type == KeyRelease)
+	// 		{
+	// 			u8 repeat=0;
+	// 			if (XEventsQueued(Disp, QueuedAfterReading))
+	// 			{
+	// 				XEvent nev;
+	// 				XPeekEvent(Disp, &nev);
 
-					if (nev.type==KeyPress && nev.xkey.time==event.xkey.time && nev.xkey.keycode==event.xkey.keycode)
-					{
-						repeat=1;
-					}
-				}
-				if (0<=key && key<=127 && Keys[key]==1 &&!repeat)
-				{
-					Keys[key]=0;
-					//printf("Release #%ld\n", key);
-					HandleKeyEvent(key, 0);
-				}
-			}
+	// 				if (nev.type==KeyPress && nev.xkey.time==event.xkey.time && nev.xkey.keycode==event.xkey.keycode)
+	// 				{
+	// 					repeat=1;
+	// 				}
+	// 			}
+	// 			if (0<=key && key<=127 && Keys[key]==1 &&!repeat)
+	// 			{
+	// 				Keys[key]=0;
+	// 				//printf("Release #%ld\n", key);
+	// 				HandleKeyEvent(key, 0);
+	// 			}
+	// 		}
 
-		}
+	// 	}
 
-		for (int i=0; i<20; i++) { Tick(); } //5000 SampleRate * 20 = 1000000 MHz Update Frequency
+	// 	for (int i=0; i<20; i++) { Tick(); } //5000 SampleRate * 20 = 1000000 MHz Update Frequency
 
-		Output();
-	}
+	// 	Output();
+	// }
 
 	printf("\nClosing...\n");
 	DestroyPulseAudio();

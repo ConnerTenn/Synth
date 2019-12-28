@@ -103,7 +103,7 @@ void InitSynth()
 				};
 	}
 
-	double d=100;
+	double d=5;
 	for (u8 f=0; f<2; f++)
 	{
 		FilterCoeff[f][0]=REG((u64)(0xFFFFFF/d),24);
@@ -256,6 +256,8 @@ void NoteOff(u8 voice)
 
 void SetReg(u8 regset, u8 reg, u64 value)
 {
+	printf("regset:%d  reg:%d  val:%d(%X)\n", regset, reg, value, value);
+
 	if (regset>=1 && regset<=16) //Voice Registers
 	{
 		if (reg==0) { Voices[regset].Oscillator.Value=value; }
@@ -272,7 +274,7 @@ void SetReg(u8 regset, u8 reg, u64 value)
 			if (value)
 			{
 				Voices[regset].ADSRState=0;	
-				//Voices[regset].Amp=0;
+				Voices[regset].Amp=0;
 				Voices[regset].Gate=1;
 			}
 			else

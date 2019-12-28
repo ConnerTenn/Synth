@@ -1,6 +1,12 @@
 import sys
 
-f=open(sys.argv[1], "r")
+if (len(sys.argv)!=3):
+	print("Error: command must be in format parse.py [in file] [outfile]")
+	exit(0)
+
+
+ifile=open(sys.argv[1], "r")
+ofile=open(sys.argv[2], "wb")
 
 #lines = f.readlines()
 
@@ -19,32 +25,75 @@ waveforms={"SAW":0,"SQU":1,"TRI":2,"RND":4,"SIN":3,"SAM":5}
 
 cmdout=[]
 
-regnames={"Oscillator":0, "incr":1, "waveform":2}
+regnames={"null":0, "oscillator":0, "incr":1, "waveform":2, "trigger":7, "volume":10}
 def setcmd(regset,name,value):
 	global cmdout
 	cmdout+=[ [regset,regnames[name], value] ]
 
-for line in f:
-	line=line.strip().split("#")[0]
-	for cmd in line.split(";"):
-		cmd=cmd.strip()
-		if len(cmd):
+def setcmd2(regset,value):
+	global cmdout
+	cmdout+=[ [regset, value] ]
 
-			voice,ins=cmd.split(":")
-			voice=int(voice)
+def setcmd1(regset):
+	global cmdout
+	cmdout+=[ [regset] ]
+
+for line in ifile:
+	line=line.strip().split("#")[0]
+	nodel=False
+	for cmd in line.split(";"):
+		cmd=cmd.strip().upper()
+		if len(cmd):
+			voice="0"; ins=""; arg=""
+			s=cmd.split(":")
+			voice=s[0]
+			if len(s)==2:
+				s=s[1].split(",")
+				ins=s[0]
+				if len(s)==2:
+					arg=s[1]
+			try:
+				voice=int(voice)
+			except:
+				pass
 
 			if ins.upper() in waveforms:
 				#cmdout+=[ [voice,waveforms[ins.upper()]] ]
-				setcmd(voice,"waveform",waveforms[ins.upper()])
+				setcmd(voice+1,"waveform",waveforms[ins.upper()])
 			if ins in notes:
 				#cmdout+=[ [voice,notes[ins]] ]
-				setcmd(voice,"incr",notes[ins])
+				setcmd(voice+1,"oscillator",0)
+				setcmd(voice+1,"incr",notes[ins])
+				setcmd(voice+1,"trigger",1)
+			if ins=="OFF":
+				setcmd(voice+1,"trigger",0)
+			if ins=="STOP":
+				pass
+			if ins=="VOL":
+				setcmd(voice+1,"volume",int(arg))
+			if voice=="DELAY":
+				setcmd2(17,int(ins))
+			if cmd=="\\":
+				nodel=True
+			if cmd=="END":
+				setcmd1(255)
 
 			print(cmd)
-	if len(line):
-		cmdout+=[0]
+	if len(line) and not nodel:
+		setcmd1(0)
 		print()
 
 
 print(cmdout)
+
+for cmd in cmdout:
+	if len(cmd)==1:
+		ofile.write(cmd[0].to_bytes(1,"little"))
+	if len(cmd)==2:
+		ofile.write(cmd[0].to_bytes(1,"little"))
+		ofile.write(cmd[1].to_bytes(8,"little"))
+	if len(cmd)==3:
+		ofile.write(cmd[0].to_bytes(1,"little"))
+		ofile.write(cmd[1].to_bytes(1,"little"))
+		ofile.write(cmd[2].to_bytes(8,"little"))
 

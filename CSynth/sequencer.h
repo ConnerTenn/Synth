@@ -2,7 +2,8 @@
 #include "synth.h"
 //#include <
 
-void InitSequencer(char *file);
+u8 InitSequencer(char *file);
+void CloseSequencer();
 
 void PlaySequence();
 
