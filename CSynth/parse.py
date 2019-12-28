@@ -23,18 +23,18 @@ notes={
 
 waveforms={"SAW":0,"SQU":1,"TRI":2,"RND":4,"SIN":3,"SAM":5}
 
-cmdout=[]
+cmdout=[] #command list to be written
 
 regnames={"null":0, "oscillator":0, "incr":1, "waveform":2, "attack":3, "decay":4, "sustain":5, "release":6, "trigger":7, "volume":10}
-def setcmd(regset,name,value):
+def setcmd(regset,name,value): #3 value command
 	global cmdout
 	cmdout+=[ [regset,regnames[name], value] ]
 
-def setcmd2(regset,value):
+def setcmd2(regset,value): #2 value command
 	global cmdout
 	cmdout+=[ [regset, value] ]
 
-def setcmd1(regset):
+def setcmd1(regset): #1 value command
 	global cmdout
 	cmdout+=[ [regset] ]
 
@@ -48,51 +48,54 @@ def parseint(numstr):
 		except:
 			return numstr
 
-nodel=False
+nodel=False #no delay
 for line in ifile:
 	line=line.strip().split("#")[0]
 	for cmd in line.split(";"):
 		cmd=cmd.strip().upper()
 		if len(cmd):
-			nodel=False
+			nodel=False #only reset after a valid command
 			voice="0"; ins=""; arg=[""]
-			s=cmd.split(":")
-			voice=s[0]
-			if len(s)==2:
-				s=s[1].split(",")
-				ins=s[0]
-				if len(s)>=2:
-					arg=s[1:]
+			s=cmd.split(":") #seperate into 2 sections
 			
-			voice=parseint(voice)
+			voices=s[0].split(",") #allow multiple voices at once
+			
+			if len(s)==2:#Should almost always be true
+				s=s[1].split(",") 
+				ins=s[0] #instruction
+				if len(s)>=2:
+					arg=s[1:] #list of comma arguments
+			
+			for voice in voices: #do for each voice
+				voice=parseint(voice)
 
-			if ins.upper() in waveforms:
-				#cmdout+=[ [voice,waveforms[ins.upper()]] ]
-				setcmd(voice+1,"waveform",waveforms[ins.upper()])
-			if ins in notes:
-				#cmdout+=[ [voice,notes[ins]] ]
-				setcmd(voice+1,"oscillator",0)
-				setcmd(voice+1,"incr",notes[ins])
-				setcmd(voice+1,"trigger",1)
-			if ins=="OFF":
-				setcmd(voice+1,"trigger",0)
-			if ins=="STOP":
-				pass
-			if ins=="VOL":
-				setcmd(voice+1,"volume",parseint(arg[0]))
-			if ins=="ADSR":
-				setcmd(voice+1,"attack",parseint(arg[0]))
-				setcmd(voice+1,"decay",parseint(arg[1]))
-				setcmd(voice+1,"sustain",parseint(arg[2]))
-				setcmd(voice+1,"release",parseint(arg[3]))
-			if voice=="DELAY":
-				setcmd2(17,parseint(ins))
-			if cmd=="\\":
-				nodel=True
-			if cmd=="END":
-				setcmd1(255)
+				if ins.upper() in waveforms:
+					#cmdout+=[ [voice,waveforms[ins.upper()]] ]
+					setcmd(voice+1,"waveform",waveforms[ins.upper()])
+				if ins in notes:
+					#cmdout+=[ [voice,notes[ins]] ]
+					setcmd(voice+1,"oscillator",0)
+					setcmd(voice+1,"incr",notes[ins])
+					setcmd(voice+1,"trigger",1)
+				if ins=="OFF":
+					setcmd(voice+1,"trigger",0)
+				if ins=="STOP":
+					pass
+				if ins=="VOL":
+					setcmd(voice+1,"volume",parseint(arg[0]))
+				if ins=="ADSR":
+					setcmd(voice+1,"attack",parseint(arg[0]))
+					setcmd(voice+1,"decay",parseint(arg[1]))
+					setcmd(voice+1,"sustain",parseint(arg[2]))
+					setcmd(voice+1,"release",parseint(arg[3]))
+				if voice=="DELAY":
+					setcmd2(17,parseint(ins))
+				if cmd=="\\":
+					nodel=True
+				if cmd=="END":
+					setcmd1(255)
 
-			print("\"{}\"  [{}]:{} {}".format(cmd,voice,ins,arg))
+				print("\"{}\"  [{}]:{} {}".format(cmd,voice,ins,arg))
 	if len(line) and not nodel:
 		setcmd1(0)
 		print()

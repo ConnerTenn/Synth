@@ -14,10 +14,7 @@
 0:Squ; 1:Squ; 2:Squ; 7:Squ; \
 0:Vol,8388607; 1:Vol,8388607; 2:Vol,8388607; 7:Vol,8388607; \
 Delay:400000; \
-0:ADSR,20,0xFFFFE0,0,0xFFFF10; \
-1:ADSR,20,0xFFFFE0,0,0xFFFF10; \
-2:ADSR,20,0xFFFFE0,0,0xFFFF10; \
-7:ADSR,20,0xFFFFE0,0,0xFFFF10; \
+0,1,2,7:ADSR,20,0xFFFFE0,0,0xFFFF10; \
 
 #intro
 #1
@@ -48,13 +45,16 @@ Delay:400000; \
 			0:C3;
 			0:A3;
 #4
+0,1,2,7:ADSR,100,0xFFFFC0,0,0xFFFF10; \
 			0:G2; 1:B3; 2:D3;
 			0:A3; 1:C3; 2:E3;
+0,1,2,7:ADSR,100,0xFFFFE0,0,0xFFFF10; \
 			0:A3; 1:C3; 2:E3;
 .
 .
 .
 			0:off; 1:off; 2:off; \
+0,1,2,7:ADSR,20,0xFFFFE0,0,0xFFFF10; \
 
 .
 .
@@ -93,12 +93,19 @@ Delay:400000; \
 7:C2;		0:G3;
 7:off; \
 #5
+0,1,2,7:ADSR,100,0xFFFFC0,0,0xFFFF10; \
 			0:G2; 1:B3; 2:D3;
 			0:A3; 1:C3; 2:E3;
-			0:A3; 1:C3; 2:E3; 
+0,1,2,7:ADSR,100,0xFFFFE0,0,0xFFFF10; \
+			0:A3; 1:C3; 2:E3;
 .
 .
 .
 			0:off; 1:off; 2:off; \
+0,1,2,7:ADSR,20,0xFFFFE0,0,0xFFFF10; \
+
+.
+.
+
 end;
 
