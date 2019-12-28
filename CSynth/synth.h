@@ -1,4 +1,7 @@
 
+#ifndef _SYNTH_H_
+#define _SYNTH_H_
+
 #include "globals.h"
 
 
@@ -85,7 +88,7 @@ void NoteOn(Reg freq, u8 voice);
 void NoteOff(u8 voice);
 //void Ctrl(u8 voice, Reg frequency, Reg 
 
-void SetReg(u8 regset, u8 reg, Reg value);
+void SetReg(u8 regset, u8 reg, u64 value);
 Reg GetReg(u8 regset, u8 reg);
 
 
@@ -101,3 +104,6 @@ Oscillator -> Waveform -> ADSR -> volume -> Out
 Voice 0-7  -> [+] -> filter -[+] -> out
 Voice 8-15 -> [+] -> filter --^
 */
+
+#endif
+

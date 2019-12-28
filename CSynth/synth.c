@@ -254,12 +254,36 @@ void NoteOff(u8 voice)
 }
 
 
-void SetReg(u8 regset, u8 reg, Reg value)
+void SetReg(u8 regset, u8 reg, u64 value)
 {
-	if (regset<16) //Voice Registers
+	if (regset>=1 && regset<=16) //Voice Registers
 	{
-		if (reg==0) { Voices[regset].Oscillator=value; }
-		if (reg==1) { Voices[regset].Incr=value; }
+		if (reg==0) { Voices[regset].Oscillator.Value=value; }
+		if (reg==1) { Voices[regset].Incr.Value=value; }
+		if (reg==2) { Voices[regset].Waveform=value; }
+		
+		if (reg==3) { Voices[regset].ADSR[0]=value; }
+		if (reg==4) { Voices[regset].ADSR[1]=value; }
+		if (reg==5) { Voices[regset].ADSR[2]=value; }
+		if (reg==6) { Voices[regset].ADSR[3]=value; }
+
+		if (reg==7) 
+		{ 
+			if (value)
+			{
+				Voices[regset].ADSRState=0;	
+				//Voices[regset].Amp=0;
+				Voices[regset].Gate=1;
+			}
+			else
+			{
+				Voices[regset].Gate=0;
+			}
+		}
+
+		if (reg==8) { Voices[regset].PulseWidth.Value=value; }
+		if (reg==9) { Voices[regset].Bend.Value=value; }
+		if (reg==10) { Voices[regset].Volume.Value=value; }
 	}
 	//else if (regset==16
 }

@@ -4,8 +4,6 @@ f=open(sys.argv[1], "r")
 
 #lines = f.readlines()
 
-notes={"A":0,"B":1,"C":2,"D":3,"E":4,"F":5,"G":6}
-
 notes={
 	"A0" :231  ,"A#0":244  ,"B0" :259  ,"C0" :274  ,"C#0":291  ,"D0" :308  ,"D#0":326  ,"E0" :346  ,"F0" :366  ,"F#0":388  ,"G0" :411  ,"G#0":435  ,
 	"A1" :461  ,"A#1":489  ,"B1" :518  ,"C1" :549  ,"C#1":581  ,"D1" :616  ,"D#1":652  ,"E1" :691  ,"F1" :732  ,"F#1":776  ,"G1" :822  ,"G#1":871  ,
@@ -17,11 +15,17 @@ notes={
 	"A7" :29528,"A#7":31284,"B7" :33144,"C7" :35115,"C#7":37203,"D7" :39415,"D#7":41759,"E7" :44242,"F7" :46873,"F#7":49660,"G7" :52613,"G#7":55741,
 	}
 
-waveforms={"saw":0,"squ":1,"tri":2,"rnd":4,"sin":3,"sam":5}
+waveforms={"SAW":0,"SQU":1,"TRI":2,"RND":4,"SIN":3,"SAM":5}
 
 cmdout=[]
+
+regnames={"Oscillator":0, "incr":1, "waveform":2}
+def setcmd(regset,name,value):
+	global cmdout
+	cmdout+=[ [regset,regnames[name], value] ]
+
 for line in f:
-	line=line.split("#")[0]
+	line=line.strip().split("#")[0]
 	for cmd in line.split(";"):
 		cmd=cmd.strip()
 		if len(cmd):
@@ -29,14 +33,17 @@ for line in f:
 			voice,ins=cmd.split(":")
 			voice=int(voice)
 
-			if ins in waveforms:
-				cmdout+=[ [voice,waveforms[ins]] ]
+			if ins.upper() in waveforms:
+				#cmdout+=[ [voice,waveforms[ins.upper()]] ]
+				setcmd(voice,"waveform",waveforms[ins.upper()])
 			if ins in notes:
-				cmdout+=[ [voice,notes[ins]] ]
+				#cmdout+=[ [voice,notes[ins]] ]
+				setcmd(voice,"incr",notes[ins])
 
 			print(cmd)
 	if len(line):
 		cmdout+=[0]
+		print()
 
 
 print(cmdout)

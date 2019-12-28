@@ -3,6 +3,7 @@
 #include <signal.h>
 #include "globals.h"
 #include "audioiface.h"
+#include "sequencer.h"
 #include "synth.h"
 
 #include <X11/Xlib.h>
@@ -112,7 +113,7 @@ void HandleKeyEvent(u8 key, u8 press)
 Display *Disp;
 Window Win;
 void InteruptHandler(int arg) { Run=0; }
-int main()
+int main(int argc, char *argv)
 {
 
 	signal(SIGINT, InteruptHandler); signal(SIGKILL, InteruptHandler);

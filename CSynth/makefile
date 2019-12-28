@@ -12,7 +12,7 @@ all: program
 	$(GCC) $(CFLAGS) $< -c -o $@
 
 
-program: main.o globals.o audioiface.o synth.o
+program: main.o globals.o audioiface.o synth.o sequencer.o
 	$(GCC) $(CFLAGS) $(LIBS) $? -o $@
 
 
