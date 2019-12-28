@@ -3,7 +3,7 @@
 UpdateFreq=1000000
 Bits=24
 
-notes=["A","A#","B","C","C#","D","D#","E","F","F#","G","G#"]
+notes=["A","A$","B","C","C$","D","D$","E","F","F$","G","G$"]
 out=[]
 for n in range(0,95+1):
 	f=(2**((n-60)/12))*440

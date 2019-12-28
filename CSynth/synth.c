@@ -103,7 +103,7 @@ void InitSynth()
 				};
 	}
 
-	double d=5;
+	double d=1;
 	for (u8 f=0; f<2; f++)
 	{
 		FilterCoeff[f][0]=REG((u64)(0xFFFFFF/d),24);
@@ -131,7 +131,8 @@ void Tick()
 		if(RegAdd(RegAdd(voice->Oscillator, voice->Incr,25), voice->Bend, 25).Value & (1<<24))
 		{
 			//reset to 0
-			RegSet(&voice->Oscillator, REG(0,24));
+			//RegSet(&voice->Oscillator, REG(0,24));
+			RegSet(&voice->Oscillator, REG((voice->Oscillator.Value+voice->Bend.Value+voice->Incr.Value)%0xFFFFFF,24));
 		}
 		else
 		{
@@ -233,6 +234,8 @@ void Output()
 		out += ((u64)U16MAX*v/0xFFFFFF-0x7FFF);
 	}
 	i16 s=out/2;
+
+	//printf("%d\n", s);
 
 	PulseWrite((u8 *)&s, 1*sizeof(i16));
 }
