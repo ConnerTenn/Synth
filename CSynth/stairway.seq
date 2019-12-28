@@ -1,0 +1,100 @@
+# <line> = [<waveform>]<command> <...>
+# <command> = <control> | <sound>
+# <control> = <channel><cmd>
+# <waveform> = "off" | "Square" | "triangle" | "Sine"
+# <sound> = <note><key>";"
+
+#Elements: Note start/stop, Frequency, ADSR, Waveform, Volume
+
+#0:Saw; 1:Tri;
+#0:ADSR,10,10,10,10;
+#0:A2; 1:B2;
+#1:C2;
+
+0:Squ; 1:Squ; 2:Squ; 7:Squ; \
+0:Vol,8388607; 1:Vol,8388607; 2:Vol,8388607; 7:Vol,8388607; \
+Delay:400000;
+
+#intro
+#1
+7:A3;
+			0:C3;
+			0:E3;
+			0:A4;
+7:G$2;		0:B4;
+			0:E3;
+			0:C3;
+			0:B4;
+#2
+7:G2;		0:C4;
+			0:E3;
+			0:C3;
+			0:C4;
+7:F$2;		0:F$3;
+			0:D3;
+			0:A3;
+			0:F$3;
+#3
+7:F2;		0:E3;
+			0:C3;
+			0:A3;
+			0:C3;
+7:off;
+			0:E3;
+			0:C3;
+			0:A3;
+#4
+0:G2; 1:B3; 2:D3;
+0:A3; 1:C3; 2:E3;
+0:A3; 1:C3; 2:E3;
+.
+.
+.
+0:off; 1:off; 2:off; \
+
+.
+.
+
+
+#melody
+#1
+			0:A4;
+			0:B4;
+#2
+7:A2;		0:C4; 1:E3;
+7:C2;
+7:E2;		0:B4; 1:off;
+7:A3;		0:A4;
+7:G$1;		0:B4; 1:E3;
+7:B2;
+7:D2;		0:A4; 1:off;
+7:G$2;		0:B4;
+#3
+7:G1;		0:C4; 1:G3;
+7:B2;		.
+7:D2;		0:D4; 1:off;
+7:G2;		0:C4;
+7:F$1;		0:B4;
+7:D2;		0:A4;
+7:F$2;		0:C4;
+7:A3;		0:D4;
+#4
+7:F1;		0:E4; 1:F3;
+7:C2;
+7:F2;	0:D4; 1:off;
+7:C2;		0:C4;
+7:F1;		0:B4;
+7:C2;		0:A4;
+7:F2;
+7:C2;		0:G3;
+7:off; \
+#5
+0:G2; 1:B3; 2:D3;
+0:A3; 1:C3; 2:E3;
+0:A3; 1:C3; 2:E3; 
+.
+.
+.
+0:off; 1:off; 2:off; \
+end;
+
