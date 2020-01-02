@@ -21,11 +21,11 @@ notes={
 	"A7" :29528,"A$7":31284,"B7" :33144,"C7" :35115,"C$7":37203,"D7" :39415,"D$7":41759,"E7" :44242,"F7" :46873,"F$7":49660,"G7" :52613,"G$7":55741,
 	}
 
-waveforms={"SAW":0,"SQU":1,"TRI":2,"RND":4,"SIN":3,"SAM":5}
+waveforms={"SAW":0,"SQU":1,"TRI":2,"RND":3,"SIN":4,"SAM":5}
 
 cmdout=[] #command list to be written
 
-regnames={"null":0, "oscillator":0, "incr":1, "waveform":2, "attack":3, "decay":4, "sustain":5, "release":6, "trigger":7, "volume":10}
+regnames={"null":0, "oscillator":0, "incr":1, "waveform":2, "attack":3, "decay":4, "sustain":5, "release":6, "trigger":7, "pulsewidth":8, "volume":10}
 def setcmd(regset,name,value): #3 value command
 	global cmdout
 	cmdout+=[ [regset,regnames[name], value] ]
@@ -88,6 +88,8 @@ for line in ifile:
 					setcmd(voice+1,"decay",parseint(arg[1]))
 					setcmd(voice+1,"sustain",parseint(arg[2]))
 					setcmd(voice+1,"release",parseint(arg[3]))
+				if ins=="PW":
+					setcmd(voice+1,"pulsewidth",parseint(arg[0]))
 				if voice=="DELAY":
 					setcmd2(17,parseint(ins))
 				if cmd=="\\":

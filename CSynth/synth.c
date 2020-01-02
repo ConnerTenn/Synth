@@ -152,7 +152,11 @@ void Tick()
 		}
 		else if (voice->Waveform==Triangle)
 		{
-			voice->Value.Value = voice->Oscillator.Value > voice->PulseWidth.Value ? 0xFFFFFF : 0;
+			//voice->Value.Value = voice->Oscillator.Value > voice->PulseWidth.Value ? 0xFFFFFF : 0;
+		}
+		else if (voice->Waveform==Noise)
+		{
+			voice->Value.Value = rand()%0xFFFFFF;
 		}
 		
 		//ADSR
@@ -258,7 +262,7 @@ void NoteOff(u8 voice)
 	Voices[voice].Gate=0;
 }
 
-char *regnames[]={"oscillator", "incr", "waveform", "attack", "decay", "sustain", "release", "trigger", "", "", "volume"};
+char *regnames[]={"oscillator", "incr", "waveform", "attack", "decay", "sustain", "release", "trigger", "pulsewidth", "", "volume"};
 void SetReg(u8 regset, u8 reg, u32 value)
 {
 	printf("regset:%2d  reg:%2d (%-10s)  val:%-7d (0x%06X)\n", regset, reg, regnames[reg], value, value);

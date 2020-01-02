@@ -1,6 +1,7 @@
 
 //#include <math.h>
 #include <signal.h>
+#include <time.h>
 #include "globals.h"
 #include "audioiface.h"
 #include "sequencer.h"
@@ -16,6 +17,7 @@ int main(int argc, char **argv)
 	printf("\nSetting up...\n");
 	signal(SIGINT, InteruptHandler); signal(SIGKILL, InteruptHandler);
 	//set_conio_terminal_mode();
+	srand(time(0));
 
 
 	InitPulseAudio();
