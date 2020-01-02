@@ -49,13 +49,18 @@ def parseint(numstr):
 			return numstr
 
 nodel=False #no delay
+
+lines=[]
 for line in ifile:
+	lines+=line.split("|")
+
+for line in lines:
 	line=line.strip().split("#")[0]
 	for cmd in line.split(";"):
 		cmd=cmd.strip().upper()
 		if len(cmd):
 			nodel=False #only reset after a valid command
-			voice="0"; ins=""; arg=[""]
+			voice="0"; ins=""; arg=[]
 			s=cmd.split(":") #seperate into 2 sections
 			
 			voices=s[0].split(",") #allow multiple voices at once
@@ -73,10 +78,13 @@ for line in ifile:
 					#cmdout+=[ [voice,waveforms[ins.upper()]] ]
 					setcmd(voice+1,"waveform",waveforms[ins.upper()])
 				if ins in notes:
-					#cmdout+=[ [voice,notes[ins]] ]
-					setcmd(voice+1,"oscillator",0)
-					setcmd(voice+1,"incr",notes[ins])
-					setcmd(voice+1,"trigger",1)
+					if len(arg)>0:
+						setcmd(voice+1,"incr",notes[ins])
+					else:
+						#cmdout+=[ [voice,notes[ins]] ]
+						setcmd(voice+1,"oscillator",0)
+						setcmd(voice+1,"incr",notes[ins])
+						setcmd(voice+1,"trigger",1)
 				if ins=="OFF":
 					setcmd(voice+1,"trigger",0)
 				if ins=="STOP":
