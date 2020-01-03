@@ -38,24 +38,26 @@ def setcmd1(regset): #1 value command
 	global cmdout
 	cmdout+=[ [regset] ]
 
-def parseint(numstr):
+def parseint(numstr, hx=True):
 	numstr=numstr.strip()
 	try:
 		return int(numstr)
 	except:
-		try:
-			return int(numstr, 16)
-		except:
+		if hx:
+			try:
+				return int(numstr, 16)
+			except:
+				return numstr
+		else:
 			return numstr
 
 nodel=False #no delay
 
 lines=[]
 for line in ifile:
-	lines+=line.split("|")
+	lines+=line.strip().split("#")[0].split("|")
 
 for line in lines:
-	line=line.strip().split("#")[0]
 	for cmd in line.split(";"):
 		cmd=cmd.strip().upper()
 		if len(cmd):
@@ -73,11 +75,21 @@ for line in lines:
 			
 			for voice in voices: #do for each voice
 				voice=parseint(voice)
-
-				if ins.upper() in waveforms:
+				
+				if voice=="DELAY":
+					setcmd2(17,parseint(ins))
+				elif ins.upper() in waveforms:
 					#cmdout+=[ [voice,waveforms[ins.upper()]] ]
 					setcmd(voice+1,"waveform",waveforms[ins.upper()])
-				if ins in notes:
+				elif type(parseint(ins,False))==type(0):
+					if len(arg)>0:
+						setcmd(voice+1,"incr",parseint(ins,False))
+					else:
+						#cmdout+=[ [voice,notes[ins]] ]
+						setcmd(voice+1,"oscillator",0)
+						setcmd(voice+1,"incr",parseint(ins,False))
+						setcmd(voice+1,"trigger",1)
+				elif ins in notes:
 					if len(arg)>0:
 						setcmd(voice+1,"incr",notes[ins])
 					else:
@@ -85,24 +97,24 @@ for line in lines:
 						setcmd(voice+1,"oscillator",0)
 						setcmd(voice+1,"incr",notes[ins])
 						setcmd(voice+1,"trigger",1)
-				if ins=="OFF":
+				elif ins=="OFF":
 					setcmd(voice+1,"trigger",0)
-				if ins=="STOP":
-					pass
-				if ins=="VOL":
+				elif ins=="STOP":
+					setcmd(voice+1,"trigger",0)
+					setcmd(voice+1,"oscillator",0)
+					setcmd(voice+1,"incr",0)
+				elif ins=="VOL":
 					setcmd(voice+1,"volume",parseint(arg[0]))
-				if ins=="ADSR":
+				elif ins=="ADSR":
 					setcmd(voice+1,"attack",parseint(arg[0]))
 					setcmd(voice+1,"decay",parseint(arg[1]))
 					setcmd(voice+1,"sustain",parseint(arg[2]))
 					setcmd(voice+1,"release",parseint(arg[3]))
-				if ins=="PW":
+				elif ins=="PW":
 					setcmd(voice+1,"pulsewidth",parseint(arg[0]))
-				if voice=="DELAY":
-					setcmd2(17,parseint(ins))
-				if cmd=="\\":
+				elif cmd=="\\":
 					nodel=True
-				if cmd=="END":
+				elif cmd=="END":
 					setcmd1(255)
 
 				print("\"{}\"  [{}]:{} {}".format(cmd,voice,ins,arg))

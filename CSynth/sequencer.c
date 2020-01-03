@@ -64,15 +64,15 @@ void PlaySequence()
 					else if (regset==17)
 					{
 						u32 value;
-						fread(&value, sizeof(u32), 1, SFile);
+						if (fread(&value, sizeof(u32), 1, SFile) != 1) { printf("Error: Sequence read error\n"); return; }
 						Delay=value;
 						printf("Delay: %d\n", Delay);
 					}
 					else
 					{
 						u8 reg; u32 value;
-						fread(&reg, sizeof(u8), 1, SFile);
-						fread(&value, sizeof(u32), 1, SFile);
+						if (fread(&reg, sizeof(u8), 1, SFile) != 1) { printf("Error: Sequence read error\n"); return; }
+						if (fread(&value, sizeof(u32), 1, SFile) != 1) { printf("Error: Sequence read error\n"); return; }
 
 						SetReg(regset, reg, value);
 					}

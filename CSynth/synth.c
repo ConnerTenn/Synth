@@ -270,15 +270,15 @@ void SetReg(u8 regset, u8 reg, u32 value)
 	if (regset>=1 && regset<=16) //Voice Registers
 	{
 		if (reg==0) { Voices[regset-1].Oscillator.Value=value; }
-		if (reg==1) { Voices[regset-1].Incr.Value=value; }
-		if (reg==2) { Voices[regset-1].Waveform=value; }
+		else if (reg==1) { Voices[regset-1].Incr.Value=value; }
+		else if (reg==2) { Voices[regset-1].Waveform=value; }
 		
-		if (reg==3) { Voices[regset-1].ADSR[0]=value; }
-		if (reg==4) { Voices[regset-1].ADSR[1]=value; }
-		if (reg==5) { Voices[regset-1].ADSR[2]=value; }
-		if (reg==6) { Voices[regset-1].ADSR[3]=value; }
+		else if (reg==3) { Voices[regset-1].ADSR[0]=value; }
+		else if (reg==4) { Voices[regset-1].ADSR[1]=value; }
+		else if (reg==5) { Voices[regset-1].ADSR[2]=value; }
+		else if (reg==6) { Voices[regset-1].ADSR[3]=value; }
 
-		if (reg==7) 
+		else if (reg==7) 
 		{ 
 			if (value)
 			{
@@ -292,9 +292,14 @@ void SetReg(u8 regset, u8 reg, u32 value)
 			}
 		}
 
-		if (reg==8) { Voices[regset-1].PulseWidth.Value=value; }
-		if (reg==9) { Voices[regset-1].Bend.Value=value; }
-		if (reg==10) { Voices[regset-1].Volume.Value=value; }
+		else if (reg==8) { Voices[regset-1].PulseWidth.Value=value; }
+		else if (reg==9) { Voices[regset-1].Bend.Value=value; }
+		else if (reg==10) { Voices[regset-1].Volume.Value=value; }
+		else
+		{
+			printf("Error: Invalid register\n");
+		}
+		
 	}
 	//else if (regset==16
 }
