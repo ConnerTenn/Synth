@@ -1,33 +1,33 @@
 
 
-module WaveGen(
+module WaveGen 
+#(
+    parameter WAVE_DEPTH=8
+) 
+(
     Clock,
     Frequency,
     WaveType,
     Waveform
 );
+    parameter WAVE_HIGH_BIT=WAVE_DEPTH-1;
+    parameter WAVE_MAX = (1<<WAVE_DEPTH)-1;
+
     input Clock;
-    input [7:0] Frequency;
+    input [WAVE_HIGH_BIT:0] Frequency;
     input [1:0] WaveType;
-    output [7:0] Waveform;
+    output [WAVE_HIGH_BIT:0] Waveform;
 
-    reg [7:0] counter = 8'h00;
-
-    // //Sawtooth
-    // assign Waveform = WaveType==2'b00 ? counter : 8'hZZ;
-    // //Square
-    // assign Waveform = WaveType==2'b01 ? (counter<=(Frequency>>1) ? 8'h00 : 8'hFF) : 8'hZZ;
-    // //Triangle
-    // assign Waveform = WaveType==2'b10 ? (counter<=(Frequency>>1) ? counter : (Frequency-counter)+1) : 8'hZZ;
+    reg [WAVE_HIGH_BIT:0] counter = WAVE_DEPTH/2;
 
     assign Waveform = WaveTypeSelect(counter, Frequency, WaveType);
 
-    function [7:0] WaveTypeSelect(input [7:0] counter, input [7:0] frequency, input [1:0] wavetype);
+    function [7:0] WaveTypeSelect(input [WAVE_HIGH_BIT:0] counter, input [WAVE_HIGH_BIT:0] frequency, input [1:0] wavetype);
         case(wavetype)
             //Sawtooth
             2'b00 : WaveTypeSelect = counter;
             //Square
-            2'b01 : WaveTypeSelect = (counter<=(Frequency>>1) ? 8'h00 : 8'hFF);
+            2'b01 : WaveTypeSelect = (counter<=(Frequency>>1) ? 8'h00 : WAVE_MAX);
             //Triangle
             2'b10 : WaveTypeSelect = (counter<=(Frequency>>1) ? counter : (Frequency-counter)+1);
             default : WaveTypeSelect = 2'bZ;
