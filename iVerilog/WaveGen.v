@@ -6,6 +6,7 @@ module WaveGen
 ) 
 (
     Clock,
+    Reset,
     Frequency,
     WaveType,
     Waveform
@@ -13,7 +14,7 @@ module WaveGen
     parameter WAVE_HIGH_BIT=WAVE_DEPTH-1;
     parameter WAVE_MAX = (1<<WAVE_DEPTH)-1;
 
-    input Clock;
+    input Clock, Reset;
     input [WAVE_HIGH_BIT:0] Frequency;
     input [1:0] WaveType;
     output [WAVE_HIGH_BIT:0] Waveform;
@@ -36,11 +37,16 @@ module WaveGen
 
     always @ (posedge Clock)
     begin
-        if (counter == Frequency) begin
-            counter <= 8'h00;
+        if (Reset==1) begin
+            counter <= WAVE_DEPTH/2;
         end
         else begin
-            counter <= counter + 1;
+            if (counter == Frequency) begin
+                counter <= 8'h00;
+            end
+            else begin
+                counter <= counter + 1;
+            end
         end
     end
 

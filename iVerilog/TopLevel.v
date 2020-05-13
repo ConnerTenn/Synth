@@ -2,15 +2,16 @@
 
 module TopLevel(
     Clock,
-    Value
-    Waveform
+    Reset,
+    Waveform,
+    WaveType
 );
     parameter WAVE_DEPTH=8;
     parameter WAVE_HIGH_BIT=WAVE_DEPTH-1;
     parameter WAVE_MAX = (1<<WAVE_DEPTH)-1;
 
-    input Clock;
-    output [7:0] Value;
+    input Clock, Reset;
+    input [1:0] WaveType;
     output [WAVE_HIGH_BIT:0] Waveform;
 
     WaveGen 
@@ -20,8 +21,9 @@ module TopLevel(
     waveGen1
     (
         .Clock(Clock),
+        .Reset(Reset),
         .Frequency(8'h0F),
-        .WaveType (2'b10),
+        .WaveType(WaveType),
         .Waveform(Waveform)
     );
     
