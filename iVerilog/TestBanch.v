@@ -3,27 +3,17 @@
 module TestBench;
 
     reg clock = 0;
-    reg A = 0, B = 0;
-    wire C;
+    wire [7:0] value;
 
     initial 
     begin
-        // clock=0;
-        // A=0;
-        // B=0;
+        $dumpfile ("TestBench.vcd"); 
+        $dumpvars;
         $display("Running Simulation...");
         
-        $monitor("%b XOR %b = %b   %b", A, B, C, clock);
+        $monitor("%g\t:  %b", $time, value);
 
-
-        A = 0; B = 0;
-        #1
-        A = 0; B = 1;
-        #1
-        A = 1; B = 1;
-        #1
-        A = 1; B = 0;
-
+        #100
 
         $finish;
     end
@@ -33,9 +23,8 @@ module TestBench;
     end
 
     TopLevel TL (
-        A,
-        B,
-        C
+        clock,
+        value
     );
 
 endmodule

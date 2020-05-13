@@ -7,3 +7,5 @@ program
 *.syn
 
 iVerilog/TestBench
+
+*.vcd

@@ -1,14 +1,17 @@
 
 
 module TopLevel(
-    In1, 
-    In2, 
-    Out
+    Clock,
+    Value
 );
-    input In1;
-    input In2;
-    output Out;
+    input Clock;
+    output [7:0] Value;
 
-    assign Out = In1 ^ In2;
+    WaveGen waveGen1(
+        .Clock(Clock),
+        .Frequency(8'h0F),
+        .WaveType (),
+        .Waveform(Value)
+    );
     
 endmodule
