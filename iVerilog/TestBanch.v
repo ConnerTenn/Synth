@@ -13,7 +13,7 @@ module TestBench;
         
         $monitor("%g\t:  %b", $time, value);
 
-        #100
+        #1024
 
         $finish;
     end

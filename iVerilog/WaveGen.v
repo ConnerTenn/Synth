@@ -9,15 +9,24 @@ module WaveGen(
     input Clock;
     input [7:0] Frequency;
     input [1:0] WaveType;
-    output reg [7:0] Waveform = 8'h00;
+    output [7:0] Waveform;
+
+    reg [7:0] counter = 8'h00;
+
+    //Sawtooth
+    assign Waveform = WaveType==2'b00 ? counter : 8'hZZ;
+    //Square Wave
+    assign Waveform = WaveType==2'b01 ? (counter<=(Frequency>>1) ? 8'h00 : 8'hFF) : 8'hZZ;
+    //Triangle
+    assign Waveform = WaveType==2'b10 ? (counter<=(Frequency>>1) ? counter : (Frequency-counter)+1) : 8'hZZ;
 
     always @ (posedge Clock)
     begin
-        if (Waveform == Frequency) begin
-            Waveform <= 8'h00;
+        if (counter == Frequency) begin
+            counter <= 8'h00;
         end
         else begin
-            Waveform <= Waveform + 1;
+            counter <= counter + 1;
         end
     end
 

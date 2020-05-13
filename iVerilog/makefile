@@ -5,7 +5,7 @@
 all: clean TestBench
 
 TestBench:
-	iverilog *.v -o TestBench
+	iverilog -s TestBench *.v -o TestBench
 
 run: all
 	@echo -e "\033[32;1mBegin Simulation\033[0m"
