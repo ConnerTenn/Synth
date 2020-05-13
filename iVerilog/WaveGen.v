@@ -7,7 +7,7 @@ module WaveGen
 (
     Clock,
     Reset,
-    Frequency,
+    Incr,
     WaveType,
     Waveform
 );
@@ -15,37 +15,39 @@ module WaveGen
     parameter WAVE_MAX = (1<<WAVE_DEPTH)-1;
 
     input Clock, Reset;
-    input [WAVE_HIGH_BIT:0] Frequency;
+    input [WAVE_HIGH_BIT:0] Incr;
     input [1:0] WaveType;
     output [WAVE_HIGH_BIT:0] Waveform;
 
-    reg [WAVE_HIGH_BIT:0] counter = WAVE_DEPTH/2;
+    wire [1:0] wavesel;
+    assign wavesel = Reset ? 2'b00 : WaveType;
 
-    assign Waveform = WaveTypeSelect(counter, Frequency, WaveType);
+    reg [WAVE_HIGH_BIT:0] counter = WAVE_MAX/2;
 
-    function [7:0] WaveTypeSelect(input [WAVE_HIGH_BIT:0] counter, input [WAVE_HIGH_BIT:0] frequency, input [1:0] wavetype);
+    assign Waveform = WaveTypeSelect(counter, Incr, wavesel);
+    function [7:0] WaveTypeSelect(input [WAVE_HIGH_BIT:0] counter, input [WAVE_HIGH_BIT:0] incr, input [1:0] wavetype);
         case(wavetype)
             //Sawtooth
             2'b00 : WaveTypeSelect = counter;
             //Square
-            2'b01 : WaveTypeSelect = (counter<=(Frequency>>1) ? 8'h00 : WAVE_MAX);
+            2'b01 : WaveTypeSelect = (counter<=(WAVE_MAX>>1) ? 8'h00 : WAVE_MAX);
             //Triangle
-            2'b10 : WaveTypeSelect = (counter<=(Frequency>>1) ? counter : (Frequency-counter)+1);
+            2'b10 : WaveTypeSelect = (counter<=(WAVE_MAX>>1) ? counter : (WAVE_MAX-counter)+1)<<1;// + (WAVE_MAX>>2);
             default : WaveTypeSelect = 2'bZ;
         endcase
     endfunction
 
-    always @ (posedge Clock)
+    always @ (posedge Clock or Reset)
     begin
         if (Reset==1) begin
-            counter <= WAVE_DEPTH/2;
+            counter <= WAVE_MAX/2;
         end
         else begin
-            if (counter == Frequency) begin
+            if (counter + Incr >= WAVE_MAX) begin
                 counter <= 8'h00;
             end
             else begin
-                counter <= counter + 1;
+                counter <= counter + Incr;
             end
         end
     end

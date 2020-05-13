@@ -22,7 +22,7 @@ module TopLevel(
     (
         .Clock(Clock),
         .Reset(Reset),
-        .Frequency(8'h0F),
+        .Incr(8'h0F),
         .WaveType(WaveType),
         .Waveform(Waveform)
     );

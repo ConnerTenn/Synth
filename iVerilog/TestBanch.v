@@ -29,9 +29,9 @@ module TestBench;
 
     initial
     begin
-        #200
+        #250
         wavetype <= 2'b01;
-        #200
+        #250
         wavetype <= 2'b10;
     end
 
