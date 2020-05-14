@@ -4,7 +4,9 @@ module TestBench;
 
     reg clock = 0, reset = 1;
     reg [1:0] wavetype = 2'b00;
-    wire [7:0] waveform;
+    wire [7:0] waveform, wavebuff;
+
+    reg scale = 0;
 
     initial
     begin
@@ -13,6 +15,16 @@ module TestBench;
         $display("Running Simulation...");
         
         $monitor("%g\t:  %b", $time, waveform);
+
+        scale <= 0;
+
+        #2
+
+        scale <= 1;
+
+        #2
+
+        scale <= 0;
 
         #10
 
@@ -39,11 +51,13 @@ module TestBench;
         #1 clock = !clock;
     end
 
+    assign waveform = scale ? (clock ? 8'hFF : 0) : wavebuff;
+
     TopLevel TL (
         .Clock(clock),
         .Reset(reset),
         .WaveType(wavetype),
-        .Waveform(waveform)
+        .Waveform(wavebuff)
     );
 
 endmodule

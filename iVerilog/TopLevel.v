@@ -10,21 +10,52 @@ module TopLevel(
     parameter WAVE_HIGH_BIT=WAVE_DEPTH-1;
     parameter WAVE_MAX = (1<<WAVE_DEPTH)-1;
 
+    parameter NUM_WAVEFORM_GENS=2;
+
     input Clock, Reset;
     input [1:0] WaveType;
     output [WAVE_HIGH_BIT:0] Waveform;
 
-    WaveGen 
-    #(
-        .WAVE_DEPTH(WAVE_DEPTH)
-    ) 
-    waveGen1
-    (
-        .Clock(Clock),
-        .Reset(Reset),
-        .Incr(8'h0F),
-        .WaveType(WaveType),
-        .Waveform(Waveform)
-    );
+    // wire [WAVE_HIGH_BIT:0] wavesigs [NUM_WAVEFORM_GENS-1:0];
+
+    genvar gi;
+
+    for (gi=0; gi<NUM_WAVEFORM_GENS; gi=gi+1) 
+    begin:wavegens
+
+        wire [WAVE_HIGH_BIT:0] wavesig;
+        wire [WAVE_HIGH_BIT*NUM_WAVEFORM_GENS:0] wavesum;
+
+        WaveGen #( .WAVE_DEPTH(WAVE_DEPTH) ) 
+        waveGenn
+        (
+            .Clock(Clock),
+            .Reset(Reset),
+            .Incr(8'h0F),
+            .WaveType((WaveType+gi)%3),
+            .Waveform(wavesig)
+        );
+
+        if (gi == 0)
+        begin
+            assign wavesum = wavesig;
+        end
+        else if (gi > 0)
+        begin
+            assign wavesum = wavesig + wavegens[gi-1].wavesum;
+        end
+    end
+
+    assign Waveform = (wavegens[NUM_WAVEFORM_GENS-1].wavesum >> (NUM_WAVEFORM_GENS-1));//+(WAVE_MAX>>(NUM_WAVEFORM_GENS-1));
+
+    // WaveGen #( .WAVE_DEPTH(WAVE_DEPTH) ) 
+    // waveGen2
+    // (
+    //     .Clock(Clock),
+    //     .Reset(Reset),
+    //     .Incr(8'h08),
+    //     .WaveType(WaveType),
+    //     .Waveform(Waveform)
+    // );
     
 endmodule
