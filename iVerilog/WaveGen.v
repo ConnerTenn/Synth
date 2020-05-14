@@ -1,10 +1,5 @@
 
 
-
-/*
-TODO: Modify Counter to reset to 0, while waveform resets to MID
-*/
-
 module WaveGen 
 #(
     parameter WAVE_DEPTH=8
@@ -27,17 +22,23 @@ module WaveGen
     wire [1:0] wavesel;
     assign wavesel = Reset ? 2'b00 : WaveType; //Wavetype is set to 0 when reset
 
-    reg [WAVE_HIGH_BIT:0] counter = WAVE_MAX/2;
+    reg [WAVE_HIGH_BIT:0] counter = 0;
 
-    assign Waveform = WaveTypeSelect(counter, Incr, wavesel);
-    function [7:0] WaveTypeSelect(input [WAVE_HIGH_BIT:0] counter, input [WAVE_HIGH_BIT:0] incr, input [1:0] wavetype);
+    wire [WAVE_HIGH_BIT:0] counterHalfShifted;
+    wire [WAVE_HIGH_BIT:0] counterQuarterShifted;
+
+    assign counterHalfShifted = counter+(WAVE_MAX>>1);
+    assign counterQuarterShifted = counter+(WAVE_MAX>>2);
+
+    assign Waveform = WaveTypeSelect(counterHalfShifted, counterQuarterShifted, wavesel);
+    function [7:0] WaveTypeSelect(input [WAVE_HIGH_BIT:0] counterhalf, input [WAVE_HIGH_BIT:0] counterquart, input [1:0] wavetype);
         case(wavetype)
             //Sawtooth
-            2'b00 : WaveTypeSelect = counter;
+            2'b00 : WaveTypeSelect = counterhalf;
             //Square
-            2'b01 : WaveTypeSelect = (counter<=(WAVE_MAX>>1) ? 8'h00 : WAVE_MAX);
+            2'b01 : WaveTypeSelect = (counterhalf>=(WAVE_MAX>>1) ? WAVE_MAX : 8'h00);
             //Triangle
-            2'b10 : WaveTypeSelect = (counter<=(WAVE_MAX>>1) ? counter : (WAVE_MAX-counter)+1)<<1;// + (WAVE_MAX>>2);
+            2'b10 : WaveTypeSelect = (counterquart<=(WAVE_MAX>>1) ? counterquart : (WAVE_MAX-counterquart))<<1;// + (WAVE_MAX>>2);
             default : WaveTypeSelect = 2'bZ;
         endcase
     endfunction
@@ -47,7 +48,7 @@ module WaveGen
         if (Reset==1) 
         begin
             //Reset counter to midpoint value
-            counter <= WAVE_MAX/2;
+            counter <= 0;
         end
         else 
         begin
