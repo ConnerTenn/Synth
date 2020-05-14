@@ -1,5 +1,10 @@
 
 
+
+/*
+TODO: Modify Counter to reset to 0, while waveform resets to MID
+*/
+
 module WaveGen 
 #(
     parameter WAVE_DEPTH=8
@@ -20,7 +25,7 @@ module WaveGen
     output [WAVE_HIGH_BIT:0] Waveform;
 
     wire [1:0] wavesel;
-    assign wavesel = Reset ? 2'b00 : WaveType;
+    assign wavesel = Reset ? 2'b00 : WaveType; //Wavetype is set to 0 when reset
 
     reg [WAVE_HIGH_BIT:0] counter = WAVE_MAX/2;
 
@@ -39,14 +44,22 @@ module WaveGen
 
     always @ (posedge Clock or Reset)
     begin
-        if (Reset==1) begin
+        if (Reset==1) 
+        begin
+            //Reset counter to midpoint value
             counter <= WAVE_MAX/2;
         end
-        else begin
-            if (counter + Incr >= WAVE_MAX) begin
+        else 
+        begin
+            //If counter will overflow on this itteration
+            if (counter + Incr >= WAVE_MAX)
+            begin
+                //Reset counter back to bottom
                 counter <= 8'h00;
             end
-            else begin
+            else
+            begin
+                //Increment counter by Incr
                 counter <= counter + Incr;
             end
         end
