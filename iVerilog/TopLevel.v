@@ -18,6 +18,8 @@ module TopLevel(
 
     // wire [WAVE_HIGH_BIT:0] wavesigs [NUM_WAVEFORM_GENS-1:0];
 
+    reg [WAVE_HIGH_BIT:0] pulseWidth = 8'h00;
+
     //Generate loop to automatically hook up multiple waveform generators
     genvar gi;
     for (gi=0; gi<NUM_WAVEFORM_GENS; gi=gi+1) 
@@ -33,7 +35,8 @@ module TopLevel(
             .Clock(Clock),
             .Reset(Reset),
             .Incr(8'h0F),
-            .WaveType((WaveType+gi)%3),
+            .WaveType(gi?2'b11:WaveType),//.WaveType((WaveType+gi)%3),
+            .PulseWidth(pulseWidth),
             .Waveform(wavesig)
         );
 
@@ -52,5 +55,21 @@ module TopLevel(
     //Rescale for 8 bit output
     assign Waveform = (wavegens[NUM_WAVEFORM_GENS-1].wavesum >> (NUM_WAVEFORM_GENS-1));//+(WAVE_MAX>>(NUM_WAVEFORM_GENS-1));
 
-    
+    reg pulsedir = 0;
+    always @(posedge Clock)
+    begin
+        if ((pulsedir==0 && pulseWidth==WAVE_MAX-1) || (pulsedir==1 && pulseWidth==1))
+        begin
+            pulsedir <= ~pulsedir;
+        end
+        if (pulsedir==0)
+        begin
+            pulseWidth <= pulseWidth+1;
+        end
+        else
+        begin
+            pulseWidth <= pulseWidth-1;
+        end
+    end
+
 endmodule

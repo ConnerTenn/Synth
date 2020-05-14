@@ -1,15 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.3.104 (w)1999-2020 BSI
-[*] Thu May 14 02:18:47 2020
+[*] Thu May 14 05:46:15 2020
 [*]
 [dumpfile] "/home/conner/Dev/Synth/iVerilog/TestBench.vcd"
-[dumpfile_mtime] "Thu May 14 02:18:43 2020"
-[dumpfile_size] 117877
+[dumpfile_mtime] "Thu May 14 05:45:42 2020"
+[dumpfile_size] 172765
 [savefile] "/home/conner/Dev/Synth/iVerilog/WaveView.gtkw"
 [timestart] 0
 [size] 1680 1004
 [pos] -1 -1
-*-7.000000 214 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-7.000000 261 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] TestBench.
 [treeopen] TestBench.TL.
 [treeopen] TestBench.TL.wavegens[0].
@@ -64,13 +64,25 @@ TestBench.TL.wavegens[1].waveGenn.WaveType[1:0]
 (1)TestBench.TL.wavegens[1].waveGenn.WaveType[1:0]
 @1401200
 -group_end
-@8023
+@8022
 TestBench.TL.wavegens[1].waveGenn.counter[7:0]
 @20000
 -
 -
-@8022
+-
+@c08022
 TestBench.TL.wavegens[1].waveGenn.Waveform[7:0]
+@28
+(0)TestBench.TL.wavegens[1].waveGenn.Waveform[7:0]
+(1)TestBench.TL.wavegens[1].waveGenn.Waveform[7:0]
+(2)TestBench.TL.wavegens[1].waveGenn.Waveform[7:0]
+(3)TestBench.TL.wavegens[1].waveGenn.Waveform[7:0]
+(4)TestBench.TL.wavegens[1].waveGenn.Waveform[7:0]
+(5)TestBench.TL.wavegens[1].waveGenn.Waveform[7:0]
+(6)TestBench.TL.wavegens[1].waveGenn.Waveform[7:0]
+(7)TestBench.TL.wavegens[1].waveGenn.Waveform[7:0]
+@1401200
+-group_end
 @20000
 -
 -
