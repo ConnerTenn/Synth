@@ -35,7 +35,7 @@ module TopLevel(
             .Clock(Clock),
             .Reset(Reset),
             .Incr(8'h0F),
-            .WaveType(gi?2'b11:WaveType),//.WaveType((WaveType+gi)%3),
+            .WaveType(gi?2'b10:WaveType),//.WaveType((WaveType+gi)%3),
             .PulseWidth(pulseWidth),
             .Waveform(wavesig)
         );
