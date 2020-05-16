@@ -1,5 +1,7 @@
 
 
+
+
 module WaveGen 
 #(
     parameter WAVE_DEPTH=8
@@ -23,27 +25,45 @@ module WaveGen
 
     reg [WAVE_HIGH_BIT:0] counter = 0;
 
-    wire [WAVE_HIGH_BIT:0] counterHalfShifted;
-    wire [WAVE_HIGH_BIT:0] counterPulseShifted;
-
-    assign counterHalfShifted = counter+(WAVE_MAX>>1);
+    wire [WAVE_HIGH_BIT:0] counterHalfShifted = counter+(WAVE_MAX>>1);
     //Ranges from  WAVE_MAX/4 When PulseWidth is near minimum, to WAVE_MAX/2 when PulseWidth is half maximum, to WAVE_MAX/4 when PulseWidth is at maximum
-    assign counterPulseShifted = counter+(PulseWidth>(WAVE_MAX>>1) ? 8'd127*PulseWidth/WAVE_MAX : 8'd127*(WAVE_MAX-PulseWidth)/WAVE_MAX);
+    wire [WAVE_HIGH_BIT:0] counterPWShifted = counter+(PulseWidth>(WAVE_MAX>>1) ? 8'd127*PulseWidth/WAVE_MAX : 8'd127*(WAVE_MAX-PulseWidth)/WAVE_MAX);
 
-    //Reset Behaviour
-    assign Waveform = Reset==1 ? counterHalfShifted : {WAVE_DEPTH{1'bZ}};
-    //Raw
-    assign Waveform = (Reset==0 && WaveType==2'b00) ? (counter) : {WAVE_DEPTH{1'bZ}};
-    //Square
-    assign Waveform = (Reset==0 && WaveType==2'b01) ? (counterHalfShifted>=PulseWidth ? WAVE_MAX : 0) : {WAVE_DEPTH{1'bZ}};
-    //Advanced Triangle (Sawtooth)
-    assign Waveform = (Reset==0 && WaveType==2'b10) ?
-        (counterPulseShifted<=PulseWidth ? 
-        ((WAVE_MAX*counterPulseShifted)/PulseWidth) : // (1/scaling) * x for upwards line
-        (WAVE_MAX*(WAVE_MAX-counterPulseShifted)/(WAVE_MAX-PulseWidth))) // (1/(1-scaling) * x) for downwards line
-            : {WAVE_DEPTH{1'bZ}};
-    //Unused
-    assign Waveform = (Reset==0 && WaveType==2'b11) ? 0 : {WAVE_DEPTH{1'bZ}};
+
+    assign Waveform = WaveTypeSelect(Reset, WaveType, counter, counterHalfShifted, counterPWShifted, PulseWidth);
+    function automatic [7:0] WaveTypeSelect(
+        input reset,
+        input [1:0] wavetype,
+        input [WAVE_HIGH_BIT:0] cntr,
+        input [WAVE_HIGH_BIT:0] cntrHalfShift,
+        input [WAVE_HIGH_BIT:0] cntrPWShift,
+        input [WAVE_HIGH_BIT:0] pulsewidth
+    );
+        if (reset==1)
+        begin
+            WaveTypeSelect = cntrHalfShift;
+        end
+        else
+        begin
+            case(wavetype)
+                //Raw
+                2'b00 : WaveTypeSelect = cntr;
+                //Square
+                2'b01 : WaveTypeSelect = (cntrHalfShift>=pulsewidth ? WAVE_MAX : 0);
+                //Advanced Triangle (Sawtooth)
+                2'b10 : WaveTypeSelect = 
+                    (cntrPWShift<=pulsewidth ? 
+                    ((WAVE_MAX*cntrPWShift)/pulsewidth) : // (1/scaling) * x for upwards line
+                    (WAVE_MAX*(WAVE_MAX-cntrPWShift)/(WAVE_MAX-pulsewidth))); // (1/(1-scaling) * x) for downwards line
+                //Sample
+                2'b11 : WaveTypeSelect = 0; //TODO: Implement
+                //Catch all
+                default : WaveTypeSelect = 2'bZ;
+            endcase
+        end
+    endfunction
+
+
     
 
     always @(posedge Clock or Reset)
