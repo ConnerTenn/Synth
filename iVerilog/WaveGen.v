@@ -9,6 +9,7 @@ module WaveGen
 (
     Clock,
     Reset,
+    GateOpen, GateClose,
     Incr,
     WaveType,
     PulseWidth,
@@ -18,28 +19,30 @@ module WaveGen
     parameter WAVE_MAX = (1<<WAVE_DEPTH)-1;
 
     input Clock, Reset;
+    input GateOpen, GateClose;
     input [WAVE_HIGH_BIT:0] Incr;
     input [1:0] WaveType;
     input [WAVE_HIGH_BIT:0] PulseWidth;
     output [WAVE_HIGH_BIT:0] Waveform;
 
     reg [WAVE_HIGH_BIT:0] counter = 0;
+    reg Gate = 0;
 
     wire [WAVE_HIGH_BIT:0] counterHalfShifted = counter+(WAVE_MAX>>1);
     //Ranges from  WAVE_MAX/4 When PulseWidth is near minimum, to WAVE_MAX/2 when PulseWidth is half maximum, to WAVE_MAX/4 when PulseWidth is at maximum
     wire [WAVE_HIGH_BIT:0] counterPWShifted = counter+(PulseWidth>(WAVE_MAX>>1) ? 8'd127*PulseWidth/WAVE_MAX : 8'd127*(WAVE_MAX-PulseWidth)/WAVE_MAX);
 
 
-    assign Waveform = WaveTypeSelect(Reset, WaveType, counter, counterHalfShifted, counterPWShifted, PulseWidth);
+    assign Waveform = WaveTypeSelect(Reset, Gate, WaveType, counter, counterHalfShifted, counterPWShifted, PulseWidth);
     function automatic [7:0] WaveTypeSelect(
-        input reset,
+        input reset, gate,
         input [1:0] wavetype,
         input [WAVE_HIGH_BIT:0] cntr,
         input [WAVE_HIGH_BIT:0] cntrHalfShift,
         input [WAVE_HIGH_BIT:0] cntrPWShift,
         input [WAVE_HIGH_BIT:0] pulsewidth
     );
-        if (reset==1)
+        if (reset==1 || gate == 0)
         begin
             WaveTypeSelect = cntrHalfShift;
         end
@@ -64,11 +67,19 @@ module WaveGen
     endfunction
 
 
-    
 
     always @(posedge Clock or Reset)
     begin
-        if (Reset==1) 
+        if (GateClose==1)
+        begin
+            Gate = 0;
+        end
+        else if (GateOpen==1)
+        begin
+            Gate = 1;
+        end
+
+        if (Reset==1 || Gate==0) 
         begin
             //Reset counter to midpoint value
             counter <= 0;

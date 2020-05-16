@@ -16,6 +16,8 @@ module TopLevel(
     input [1:0] WaveType;
     output [WAVE_HIGH_BIT:0] Waveform;
 
+    reg gateopen = 0, gateclose = 0;
+
     // wire [WAVE_HIGH_BIT:0] wavesigs [NUM_WAVEFORM_GENS-1:0];
 
     reg [WAVE_HIGH_BIT:0] pulseWidth = 8'h00;
@@ -34,6 +36,7 @@ module TopLevel(
         (
             .Clock(Clock),
             .Reset(Reset),
+            .GateOpen(gateopen), .GateClose(gateclose),
             .Incr(8'h0F),
             .WaveType(gi?2'b10:WaveType),//.WaveType((WaveType+gi)%3),
             .PulseWidth(pulseWidth),
@@ -70,6 +73,27 @@ module TopLevel(
         begin
             pulseWidth <= pulseWidth-1;
         end
+    end
+
+
+    initial 
+    begin
+        gateopen <= 1;
+        #2;
+        gateopen <= 0;
+
+        #100;
+
+        gateclose <= 1;
+        #2;
+        gateclose <= 0;
+
+        #40;
+
+        gateopen <= 1;
+        #2;
+        gateopen <= 0;
+
     end
 
 endmodule
