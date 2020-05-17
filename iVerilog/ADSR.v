@@ -4,18 +4,21 @@ module ADSR
     parameter WAVE_DEPTH=8
 ) 
 (
-    Clock,
+    Clock, 
+    Reset,
     Gate,
+    Running,
     Sustain,
-    Envolope,
+    Envelope,
 );
 
     parameter WAVE_MAX = (1<<WAVE_DEPTH)-1;
 
-    input Clock;
+    input Clock, Reset;
     input Gate;
+    output reg Running = 0;
     input [WAVE_DEPTH-1:0] Sustain;
-    output reg [WAVE_DEPTH-1:0] Envolope = 0*WAVE_MAX;
+    output reg [WAVE_DEPTH-1:0] Envelope = 0;
 
     reg [1:0] state = 2'b00;
 
@@ -25,48 +28,48 @@ module ADSR
 
     always @(posedge Clock)
     begin
-        if (Gate==1)
+        if (Reset == 0)
         begin
             case (state)
             2'b00: //Attack
+                if (Running == 1)
                 begin
-                    if (Envolope==WAVE_MAX)
+                    if (Envelope==WAVE_MAX)
                     begin
                         state <= state + 1;
                         decrementor <= WAVE_MAX;
                     end
                     else if (decrementor>=WAVE_MAX)
                     begin
-                        Envolope <= Envolope + 1;
+                        Envelope <= Envelope + 1;
                         decrementor <= decrementor - WAVE_MAX/2;
                     end
                     else
                     begin
-                        decrementor <= decrementor + (WAVE_MAX-Envolope);
+                        decrementor <= decrementor + (WAVE_MAX-Envelope);
                     end
                 end
                 
             2'b01: //Decay
                 begin
-                    if (Envolope==Sustain)
+                    if (Envelope==Sustain)
                     begin
                         state <= state + 1;
                         decrementor <= 4*WAVE_MAX;
                     end
                     else if (decrementor>=WAVE_MAX)
                     begin
-                        Envolope <= Envolope - 1;
+                        Envelope <= Envelope - 1;
                         decrementor <= decrementor - WAVE_MAX/2;
                     end
                     else
                     begin
-                        decrementor <= decrementor + (Envolope-Sustain);
+                        decrementor <= decrementor + (Envelope-Sustain);
                     end
                 end
             2'b10: //Sustain
                 begin
-                    decrementor <= decrementor - 1;
-                    if (decrementor==0)
+                    if (Gate==0)
                     begin
                         state <= state + 1;
                         decrementor <= WAVE_MAX;
@@ -74,27 +77,35 @@ module ADSR
                 end
             2'b11: //Release
                 begin
-                    if (decrementor>=WAVE_MAX)
+                    if (Envelope == 0)
                     begin
-                        Envolope <= Envolope - 1;
+                        Running <= 0;
+                    end
+                    else if (decrementor>=WAVE_MAX)
+                    begin
+                        Envelope <= Envelope - 1;
                         decrementor <= decrementor - WAVE_MAX/2;
                     end
                     else
                     begin
-                        decrementor <= decrementor + (Envolope);
+                        decrementor <= decrementor + (Envelope);
                     end
                 end
             endcase
         end
     end
 
-    always @(Gate)
+    always @(posedge Gate or Reset)
     begin
-        if (Gate==0)
+        if (Gate == 1 || Reset == 1)
         begin
-            Envolope = 0;
+            Envelope = 0;
             state = 2'b00;
             decrementor = WAVE_MAX;
+            if (Gate == 1)
+            begin
+                Running = 1;
+            end
         end
     end
 

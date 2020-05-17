@@ -61,7 +61,7 @@ module TestBench;
         #50
         
         addr <= 16'h0011; //Incr
-        writedata = 8'h3F;
+        writedata = 8'h0F;
         readwrite <= 1;
         busclk <= 1; #2 busclk <= 0; #2
 
@@ -85,10 +85,10 @@ module TestBench;
         readwrite <= 1;
         busclk <= 1; #2 busclk <= 0; #2
 
-        #50
+        #1000
 
         addr <= 16'h0011; //Incr
-        writedata = 8'h0F; 
+        writedata = 8'h05; 
         readwrite <= 1;
         busclk <= 1; #2 busclk <= 0; #2
 
@@ -97,7 +97,7 @@ module TestBench;
         readwrite <= 1;
         busclk <= 1; #2 busclk <= 0; #2
 
-        #8000
+        #3000
 
         addr <= 16'h0010; //Gate
         writedata = 8'h00; //Close

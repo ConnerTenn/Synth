@@ -18,7 +18,7 @@ module TopLevel(
     input [1:0] WaveType;
     output [WAVE_HIGH_BIT:0] Waveform;
 
-    reg gate = 0;
+    reg run = 0;
 
     // wire [WAVE_HIGH_BIT:0] wavesigs [NUM_WAVEFORM_GENS-1:0];
 
@@ -37,7 +37,7 @@ module TopLevel(
         (
             .Clock(Clock),
             .Reset(Reset),
-            .Gate(gate),
+            .Run(run),
             .Incr(8'h0F),
             .WaveType(gi?2'b10:WaveType),//.WaveType((WaveType+gi)%3),
             .PulseWidth(pulseWidth),
@@ -91,15 +91,15 @@ module TopLevel(
 
     initial 
     begin
-        gate <= 1;
+        run <= 1;
 
         #100;
 
-        gate <= 0;
+        run <= 0;
 
         #40;
 
-        gate <= 1;
+        run <= 1;
 
     end
 

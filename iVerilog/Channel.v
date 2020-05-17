@@ -20,14 +20,15 @@ module Channel
 
 
     wire [WAVE_DEPTH-1:0] wavegenout;
-    wire [WAVE_DEPTH-1:0] envolope;
+    wire [WAVE_DEPTH-1:0] envelope;
     wire [2*WAVE_DEPTH-1:0] mul;
 
-    assign mul = (wavegenout * envolope);
-    assign Waveform = (mul>>8) + ((WAVE_MAX/2) - (envolope>>1));
+    assign mul = (wavegenout * envelope);
+    assign Waveform = (mul>>8) + ((WAVE_MAX/2) - (envelope>>1));
 
 
     reg gate = 0;
+    wire run = 0;
     reg [WAVE_DEPTH-1:0] incr = 0;
     reg [1:0] wavetype = 0;
     reg [WAVE_DEPTH-1:0] pulsewidth = 0;
@@ -38,7 +39,7 @@ module Channel
     (
         .Clock(Clock),
         .Reset(Reset),
-        .Gate(gate),
+        .Run(running),
         .Incr(incr),
         .WaveType(wavetype),//.WaveType((WaveType+gi)%3),
         .PulseWidth(pulsewidth),
@@ -48,9 +49,11 @@ module Channel
     ADSR #( .WAVE_DEPTH(WAVE_DEPTH) ) adsr
     (
         .Clock(Clock),
+        .Reset(Reset),
         .Gate(gate),
+        .Running(running),
         .Sustain(sustain),
-        .Envolope(envolope)
+        .Envelope(envelope)
     );
 
 
@@ -66,7 +69,7 @@ module Channel
             if (BusReadWrite==0) //Read
             begin
                 case(BusAddress)
-                    ADDR+0: busdata <= {7'h00,gate};
+                    ADDR+0: busdata <= {7'h00,run};
                     ADDR+1: busdata <= incr;
                     ADDR+2: busdata <= {6'h00,wavetype};
                     ADDR+3: busdata <= pulsewidth;

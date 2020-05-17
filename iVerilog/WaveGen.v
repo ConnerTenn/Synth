@@ -9,7 +9,7 @@ module WaveGen
 (
     Clock,
     Reset,
-    Gate,
+    Run,
     Incr,
     WaveType,
     PulseWidth,
@@ -19,7 +19,7 @@ module WaveGen
     parameter WAVE_MAX = (1<<WAVE_DEPTH)-1;
 
     input Clock, Reset;
-    input Gate;
+    input Run;
     input [WAVE_HIGH_BIT:0] Incr;
     input [1:0] WaveType;
     input [WAVE_HIGH_BIT:0] PulseWidth;
@@ -28,7 +28,7 @@ module WaveGen
     reg [WAVE_HIGH_BIT:0] counter = 0;
     
 
-    assign Waveform = WaveTypeSelect(Reset, Gate, WaveType, counter, PulseWidth);
+    assign Waveform = WaveTypeSelect(Reset, Run, WaveType, counter, PulseWidth);
     function automatic [7:0] WaveTypeSelect(
         input reset, gate,
         input [1:0] wavetype,
@@ -64,7 +64,7 @@ module WaveGen
     always @(posedge Clock)
     begin
 
-        if (Reset==0 && Gate==1)
+        if (Reset==0 && Run==1)
         begin
             //If counter will overflow on this itteration
             if (counter + Incr >= WAVE_MAX)
@@ -80,9 +80,9 @@ module WaveGen
         end
     end
 
-    always @(Reset or Gate)
+    always @(Reset or Run)
     begin
-        if (Reset==1 || Gate==0) 
+        if (Reset==1 || Run==0) 
         begin
             //Reset counter to midpoint value
             counter <= 0;
