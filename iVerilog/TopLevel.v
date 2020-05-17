@@ -18,7 +18,7 @@ module TopLevel(
     input [1:0] WaveType;
     output [WAVE_HIGH_BIT:0] Waveform;
 
-    reg gateopen = 0, gateclose = 0;
+    reg gate = 0;
 
     // wire [WAVE_HIGH_BIT:0] wavesigs [NUM_WAVEFORM_GENS-1:0];
 
@@ -37,7 +37,7 @@ module TopLevel(
         (
             .Clock(Clock),
             .Reset(Reset),
-            .GateOpen(gateopen), .GateClose(gateclose),
+            .Gate(gate),
             .Incr(8'h0F),
             .WaveType(gi?2'b10:WaveType),//.WaveType((WaveType+gi)%3),
             .PulseWidth(pulseWidth),
@@ -56,20 +56,12 @@ module TopLevel(
         end
     end
 
-    WaveGenController #(.WAVE_DEPTH(WAVE_DEPTH), .ADDR(16'h0010)) wavectl
+    Channel #(.WAVE_DEPTH(WAVE_DEPTH), .ADDR(16'h0010)) channel
     (
         .Clock(Clock),
         .Reset(Reset),
         .BusAddress(BusAddress), .BusData(BusData), .BusReadWrite(BusReadWrite), .BusClock(BusClock),
         .Waveform()
-    );
-
-    ADSR #(.WAVE_DEPTH(WAVE_DEPTH)) adsr
-    (
-        .Clock(Clock),
-        .Reset(Reset),
-        .Sustain(WAVE_MAX/2),
-        .Envolope()
     );
 
 
@@ -99,21 +91,15 @@ module TopLevel(
 
     initial 
     begin
-        gateopen <= 1;
-        #2;
-        gateopen <= 0;
+        gate <= 1;
 
         #100;
 
-        gateclose <= 1;
-        #2;
-        gateclose <= 0;
+        gate <= 0;
 
         #40;
 
-        gateopen <= 1;
-        #2;
-        gateopen <= 0;
+        gate <= 1;
 
     end
 

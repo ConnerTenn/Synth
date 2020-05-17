@@ -9,7 +9,7 @@ module WaveGen
 (
     Clock,
     Reset,
-    GateOpen, GateClose,
+    Gate,
     Incr,
     WaveType,
     PulseWidth,
@@ -19,14 +19,13 @@ module WaveGen
     parameter WAVE_MAX = (1<<WAVE_DEPTH)-1;
 
     input Clock, Reset;
-    input GateOpen, GateClose;
+    input Gate;
     input [WAVE_HIGH_BIT:0] Incr;
     input [1:0] WaveType;
     input [WAVE_HIGH_BIT:0] PulseWidth;
     output [WAVE_HIGH_BIT:0] Waveform;
 
     reg [WAVE_HIGH_BIT:0] counter = 0;
-    reg Gate = 0;
     
 
     assign Waveform = WaveTypeSelect(Reset, Gate, WaveType, counter, PulseWidth);
@@ -64,14 +63,6 @@ module WaveGen
 
     always @(posedge Clock)
     begin
-        if (GateClose==1)
-        begin
-            Gate = 0;
-        end
-        else if (GateOpen==1)
-        begin
-            Gate = 1;
-        end
 
         if (Reset==0 && Gate==1)
         begin

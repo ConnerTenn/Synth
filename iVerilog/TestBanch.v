@@ -22,7 +22,7 @@ module TestBench;
         $dumpvars;
         $display("Running Simulation...");
         
-        $monitor("%g\t:  %b", $time, waveform);
+        // $monitor("%g\t:  %b", $time, waveform);
 
         //Force output a full range scale test
         scale <= 0;
@@ -42,6 +42,8 @@ module TestBench;
         reset <= 1;
         #10
 
+        $display("Simulation Complete");
+
         $finish;
     end
 
@@ -58,7 +60,7 @@ module TestBench;
     begin
         #50
         
-        addr <= 16'h0010; //Incr
+        addr <= 16'h0011; //Incr
         writedata = 8'h3F;
         readwrite <= 1;
         busclk <= 1; #2 busclk <= 0; #2
@@ -73,14 +75,19 @@ module TestBench;
         readwrite <= 1;
         busclk <= 1; #2 busclk <= 0; #2
         
-        addr <= 16'h0011; //Gate
+        addr <= 16'h0014; //Sustain
+        writedata = 8'h7F;
+        readwrite <= 1;
+        busclk <= 1; #2 busclk <= 0; #2
+
+        addr <= 16'h0010; //Gate
         writedata = 8'h01; //Open
         readwrite <= 1;
         busclk <= 1; #2 busclk <= 0; #2
 
         #50
 
-        addr <= 16'h0010; //Incr
+        addr <= 16'h0011; //Incr
         writedata = 8'h0F; 
         readwrite <= 1;
         busclk <= 1; #2 busclk <= 0; #2
@@ -90,9 +97,9 @@ module TestBench;
         readwrite <= 1;
         busclk <= 1; #2 busclk <= 0; #2
 
-        #200
+        #8000
 
-        addr <= 16'h0011; //Gate
+        addr <= 16'h0010; //Gate
         writedata = 8'h00; //Close
         readwrite <= 1;
         busclk <= 1; #2 busclk <= 0; #2

@@ -1,18 +1,18 @@
 [*]
 [*] GTKWave Analyzer v3.3.104 (w)1999-2020 BSI
-[*] Sun May 17 19:36:18 2020
+[*] Sun May 17 21:39:03 2020
 [*]
 [dumpfile] "/home/conner/Dev/Synth/iVerilog/TestBench.vcd"
-[dumpfile_mtime] "Sun May 17 19:35:16 2020"
-[dumpfile_size] 92891
+[dumpfile_mtime] "Sun May 17 21:38:51 2020"
+[dumpfile_size] 978602
 [savefile] "/home/conner/Dev/Synth/iVerilog/WaveView.gtkw"
 [timestart] 0
 [size] 1680 1004
 [pos] -1 -1
-*-8.000000 133 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-10.000000 1761 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] TestBench.
 [treeopen] TestBench.TL.
-[treeopen] TestBench.TL.wavectl.
+[treeopen] TestBench.TL.channel.
 [treeopen] TestBench.TL.wavegens[0].
 [treeopen] TestBench.TL.wavegens[0].waveGenn.
 [treeopen] TestBench.TL.wavegens[1].
@@ -44,9 +44,6 @@ TestBench.waveform[7:0]
 -
 -
 -
-@28
-TestBench.TL.gateopen
-TestBench.TL.gateclose
 @200
 -
 -@TL
@@ -59,17 +56,45 @@ TestBench.TL.BusClock
 @200
 -
 -
--@wavectl
+-@channel
+@28
+TestBench.TL.channel.gate
 @22
-TestBench.TL.wavectl.BusData[7:0]
-TestBench.TL.wavectl.incr[7:0]
+TestBench.TL.channel.incr[7:0]
+@28
+TestBench.TL.channel.wavetype[1:0]
+@22
+TestBench.TL.channel.pulsewidth[7:0]
+TestBench.TL.channel.sustain[7:0]
+@20000
+-
+@8022
+TestBench.TL.channel.Waveform[7:0]
+@20000
+-
+-
 @200
 -@wavegen
-@28
-TestBench.TL.wavectl.wavegen.Gate
 @8022
-TestBench.TL.wavectl.wavegen.counter[7:0]
-TestBench.TL.wavectl.wavegen.Waveform[7:0]
+TestBench.TL.channel.wavegen.counter[7:0]
+TestBench.TL.channel.wavegen.Waveform[7:0]
+@20000
+-
+-
+@200
+-@adsr
+@28
+TestBench.TL.channel.adsr.state[1:0]
+@8022
+TestBench.TL.channel.adsr.decrementor[15:0]
+@20000
+-
+@8022
+TestBench.TL.channel.adsr.Envolope[7:0]
+@20000
+-
+-
+-
 @200
 -
 -
@@ -122,19 +147,13 @@ TestBench.TL.wavegens[1].waveGenn.Waveform[7:0]
 @200
 -
 -
--@adsr
-@88022
-TestBench.TL.adsr.decrementor[15:0]
 @20000
 -
 -
-@8022
-TestBench.TL.adsr.Envolope[7:0]
-@20000
 -
-@20001
 -
-@20000
+-
+-
 -
 -
 @200

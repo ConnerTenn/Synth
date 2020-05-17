@@ -1,19 +1,19 @@
 
 module ADSR
 #(
-    parameter WAVE_DEPTH=8,
-    parameter ADDR=0
+    parameter WAVE_DEPTH=8
 ) 
 (
     Clock,
-    Reset,
+    Gate,
     Sustain,
     Envolope,
 );
 
     parameter WAVE_MAX = (1<<WAVE_DEPTH)-1;
 
-    input Clock, Reset;
+    input Clock;
+    input Gate;
     input [WAVE_DEPTH-1:0] Sustain;
     output reg [WAVE_DEPTH-1:0] Envolope = 0*WAVE_MAX;
 
@@ -25,7 +25,7 @@ module ADSR
 
     always @(posedge Clock)
     begin
-        if (Reset==0)
+        if (Gate==1)
         begin
             case (state)
             2'b00: //Attack
@@ -88,9 +88,9 @@ module ADSR
         end
     end
 
-    always @(Reset)
+    always @(Gate)
     begin
-        if (Reset==1)
+        if (Gate==0)
         begin
             Envolope = 0;
             state = 2'b00;

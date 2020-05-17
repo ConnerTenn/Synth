@@ -1,6 +1,6 @@
 
 
-module WaveGenController
+module Channel
 #(
     parameter WAVE_DEPTH=8,
     parameter ADDR=0
@@ -11,38 +11,52 @@ module WaveGenController
     BusAddress, BusData, BusReadWrite, BusClock,
     Waveform
 );
+    parameter WAVE_MAX = (1<<WAVE_DEPTH)-1;
+
+
     input Clock, Reset;
     input [15:0] BusAddress; inout [7:0] BusData; input BusReadWrite; input BusClock;
     output [WAVE_DEPTH-1:0] Waveform;
 
-    reg [7:0] busdata = 0;
 
-    reg gateopen = 0, gateclose = 0;
+    wire [WAVE_DEPTH-1:0] wavegenout;
+    wire [WAVE_DEPTH-1:0] envolope;
+    wire [2*WAVE_DEPTH-1:0] mul;
+
+    assign mul = (wavegenout * envolope);
+    assign Waveform = (mul>>8) + ((WAVE_MAX/2) - (envolope>>1));
+
+
+    reg gate = 0;
     reg [WAVE_DEPTH-1:0] incr = 0;
     reg [1:0] wavetype = 0;
     reg [WAVE_DEPTH-1:0] pulsewidth = 0;
+    reg [WAVE_DEPTH-1:0] sustain = 0;
+
 
     WaveGen #( .WAVE_DEPTH(WAVE_DEPTH) ) wavegen
     (
         .Clock(Clock),
         .Reset(Reset),
-        .GateOpen(gateopen), .GateClose(gateclose),
+        .Gate(gate),
         .Incr(incr),
         .WaveType(wavetype),//.WaveType((WaveType+gi)%3),
         .PulseWidth(pulsewidth),
-        .Waveform(Waveform)
+        .Waveform(wavegenout)
     );
 
-    always @(posedge Clock)
-    begin
-        if (Reset == 0)
-        begin
-            if (gateopen==1) begin gateopen <= 0; end
-            if (gateclose==1) begin gateclose <= 0; end
-        end
-    end
+    ADSR #( .WAVE_DEPTH(WAVE_DEPTH) ) adsr
+    (
+        .Clock(Clock),
+        .Gate(gate),
+        .Sustain(sustain),
+        .Envolope(envolope)
+    );
+
 
     
+    reg [7:0] busdata = 0;
+
     assign BusData = BusReadWrite ? 8'hZZ : busdata;
 
     always @(posedge BusClock)
@@ -52,35 +66,41 @@ module WaveGenController
             if (BusReadWrite==0) //Read
             begin
                 case(BusAddress)
-                    ADDR+0: busdata <= incr;
-                    ADDR+1: busdata <= 8'h00;
+                    ADDR+0: busdata <= {7'h00,gate};
+                    ADDR+1: busdata <= incr;
                     ADDR+2: busdata <= {6'h00,wavetype};
                     ADDR+3: busdata <= pulsewidth;
+                    ADDR+4: busdata <= sustain;
                     default: busdata <= 8'hZZ;
                 endcase
             end
             else //Write
             begin
                 case(BusAddress) 
-                    ADDR+0: incr <= BusData; 
-                    ADDR+1: if (BusData==1) begin gateopen <= 1; end else begin gateclose <= 1; end
+                    ADDR+0: gate <= BusData[0:0]; 
+                    ADDR+1: incr <= BusData;
                     ADDR+2: wavetype <= BusData[1:0];
                     ADDR+3: pulsewidth <= BusData;
+                    ADDR+4: sustain <= BusData;
                 endcase
             end
         end
     end
 
-    always @(Reset)
+
+     always @(Reset)
     begin
         if (Reset == 1)
         begin
-            gateopen = 0; gateclose = 0;
+            gate = 0;
             incr = 0;
             wavetype = 0;
             pulsewidth = 0;
             busdata = 0;
+            sustain = 0;
         end
     end
 
+
 endmodule
+
