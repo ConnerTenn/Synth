@@ -36,7 +36,7 @@ module TestBench;
         reset <= 0;
 
         //Run for 1000[u]
-        #4000
+        #10000
 
         //Hold reset for 10[u]
         reset <= 1;

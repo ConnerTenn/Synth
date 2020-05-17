@@ -68,6 +68,7 @@ module TopLevel(
     (
         .Clock(Clock),
         .Reset(Reset),
+        .Sustain(WAVE_MAX/2),
         .Envolope()
     );
 
