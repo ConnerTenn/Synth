@@ -27,6 +27,7 @@ module WaveGen
 
     reg [WAVE_HIGH_BIT:0] counter = 0;
     reg Gate = 0;
+    
 
     assign Waveform = WaveTypeSelect(Reset, Gate, WaveType, counter, PulseWidth);
     function automatic [7:0] WaveTypeSelect(

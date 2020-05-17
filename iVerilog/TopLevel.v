@@ -3,6 +3,7 @@
 module TopLevel(
     Clock,
     Reset,
+    BusAddress, BusData, BusReadWrite, BusClock,
     Waveform,
     WaveType
 );
@@ -13,6 +14,7 @@ module TopLevel(
     parameter NUM_WAVEFORM_GENS=2;
 
     input Clock, Reset;
+    input [15:0] BusAddress; inout [7:0] BusData; input BusReadWrite; input BusClock;
     input [1:0] WaveType;
     output [WAVE_HIGH_BIT:0] Waveform;
 
@@ -31,8 +33,7 @@ module TopLevel(
         wire [WAVE_HIGH_BIT*NUM_WAVEFORM_GENS:0] wavesum;
 
         //Connect each wavegen block
-        WaveGen #( .WAVE_DEPTH(WAVE_DEPTH) ) 
-        waveGenn
+        WaveGen #( .WAVE_DEPTH(WAVE_DEPTH) ) waveGenn
         (
             .Clock(Clock),
             .Reset(Reset),
@@ -55,8 +56,20 @@ module TopLevel(
         end
     end
 
+    WaveGenController #(.WAVE_DEPTH(WAVE_DEPTH), .ADDR(1)) wavectl
+    (
+        .Clock(Clock),
+        .Reset(Reset),
+        .BusAddress(BusAddress), .BusData(BusData), .BusReadWrite(BusReadWrite), .BusClock(BusClock),
+        .Waveform()
+    );
+
+
     //Rescale for 8 bit output
     assign Waveform = (wavegens[NUM_WAVEFORM_GENS-1].wavesum >> (NUM_WAVEFORM_GENS-1));//+(WAVE_MAX>>(NUM_WAVEFORM_GENS-1));
+
+
+
 
     reg pulsedir = 0;
     always @(posedge Clock)
