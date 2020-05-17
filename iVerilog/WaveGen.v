@@ -62,7 +62,7 @@ module WaveGen
 
 
 
-    always @(posedge Clock or Reset)
+    always @(posedge Clock)
     begin
         if (GateClose==1)
         begin
@@ -73,12 +73,7 @@ module WaveGen
             Gate = 1;
         end
 
-        if (Reset==1 || Gate==0) 
-        begin
-            //Reset counter to midpoint value
-            counter <= 0;
-        end
-        else 
+        if (Reset==0 && Gate==1)
         begin
             //If counter will overflow on this itteration
             if (counter + Incr >= WAVE_MAX)
@@ -91,6 +86,15 @@ module WaveGen
                 //Increment counter by Incr
                 counter <= counter + Incr;
             end
+        end
+    end
+
+    always @(Reset or Gate)
+    begin
+        if (Reset==1 || Gate==0) 
+        begin
+            //Reset counter to midpoint value
+            counter <= 0;
         end
     end
 

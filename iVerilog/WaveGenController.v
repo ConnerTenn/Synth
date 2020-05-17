@@ -33,17 +33,9 @@ module WaveGenController
         .Waveform(Waveform)
     );
 
-    always @(posedge Clock or Reset)
+    always @(posedge Clock)
     begin
-        if (Reset == 1)
-        begin
-            gateopen = 0; gateclose = 0;
-            incr = 0;
-            wavetype = 0;
-            pulsewidth = 0;
-            busdata = 0;
-        end
-        else
+        if (Reset == 0)
         begin
             if (gateopen==1) begin gateopen <= 0; end
             if (gateclose==1) begin gateclose <= 0; end
@@ -76,6 +68,18 @@ module WaveGenController
                     ADDR+3: pulsewidth <= BusData;
                 endcase
             end
+        end
+    end
+
+    always @(Reset)
+    begin
+        if (Reset == 1)
+        begin
+            gateopen = 0; gateclose = 0;
+            incr = 0;
+            wavetype = 0;
+            pulsewidth = 0;
+            busdata = 0;
         end
     end
 
