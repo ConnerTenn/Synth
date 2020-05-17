@@ -33,6 +33,7 @@ module Channel
     reg [1:0] wavetype = 0;
     reg [WAVE_DEPTH-1:0] pulsewidth = 0;
     reg [WAVE_DEPTH-1:0] sustain = 0;
+    reg linear = 0;
 
 
     WaveGen #( .WAVE_DEPTH(WAVE_DEPTH) ) wavegen
@@ -53,6 +54,7 @@ module Channel
         .Gate(gate),
         .Running(running),
         .Sustain(sustain),
+        .Linear(linear),
         .Envelope(envelope)
     );
 
@@ -74,6 +76,7 @@ module Channel
                     ADDR+2: busdata <= {6'h00,wavetype};
                     ADDR+3: busdata <= pulsewidth;
                     ADDR+4: busdata <= sustain;
+                    ADDR+5: busdata <= {7'h00,linear};
                     default: busdata <= 8'hZZ;
                 endcase
             end
@@ -85,6 +88,7 @@ module Channel
                     ADDR+2: wavetype <= BusData[1:0];
                     ADDR+3: pulsewidth <= BusData;
                     ADDR+4: sustain <= BusData;
+                    ADDR+5: linear <= BusData[0:0];
                 endcase
             end
         end

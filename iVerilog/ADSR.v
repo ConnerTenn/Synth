@@ -9,7 +9,8 @@ module ADSR
     Gate,
     Running,
     Sustain,
-    Envelope,
+    Linear,
+    Envelope
 );
 
     parameter WAVE_MAX = (1<<WAVE_DEPTH)-1;
@@ -18,6 +19,7 @@ module ADSR
     input Gate;
     output reg Running = 0;
     input [WAVE_DEPTH-1:0] Sustain;
+    input Linear;
     output reg [WAVE_DEPTH-1:0] Envelope = 0;
 
     reg [1:0] state = 2'b00;
@@ -39,6 +41,10 @@ module ADSR
                         state <= state + 1;
                         decrementor <= WAVE_MAX;
                     end
+                    else if (Linear == 1)
+                    begin
+                        Envelope <= Envelope + 1;
+                    end
                     else if (decrementor>=WAVE_MAX)
                     begin
                         Envelope <= Envelope + 1;
@@ -56,6 +62,10 @@ module ADSR
                     begin
                         state <= state + 1;
                         decrementor <= 4*WAVE_MAX;
+                    end
+                    else if (Linear == 1)
+                    begin
+                        Envelope <= Envelope - 1;
                     end
                     else if (decrementor>=WAVE_MAX)
                     begin
@@ -80,6 +90,10 @@ module ADSR
                     if (Envelope == 0)
                     begin
                         Running <= 0;
+                    end
+                    else if (Linear == 1)
+                    begin
+                        Envelope <= Envelope - 1;
                     end
                     else if (decrementor>=WAVE_MAX)
                     begin

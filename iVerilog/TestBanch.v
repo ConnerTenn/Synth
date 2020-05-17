@@ -99,6 +99,13 @@ module TestBench;
 
         #3000
 
+        addr <= 16'h0015; //Linear
+        writedata = 8'h01;
+        readwrite <= 1;
+        busclk <= 1; #2 busclk <= 0; #2
+
+        #1000
+
         addr <= 16'h0010; //Gate
         writedata = 8'h00; //Close
         readwrite <= 1;
