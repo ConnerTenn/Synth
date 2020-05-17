@@ -1,15 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.3.104 (w)1999-2020 BSI
-[*] Sun May 17 07:11:04 2020
+[*] Sun May 17 19:36:18 2020
 [*]
 [dumpfile] "/home/conner/Dev/Synth/iVerilog/TestBench.vcd"
-[dumpfile_mtime] "Sun May 17 07:10:27 2020"
-[dumpfile_size] 84295
+[dumpfile_mtime] "Sun May 17 19:35:16 2020"
+[dumpfile_size] 92891
 [savefile] "/home/conner/Dev/Synth/iVerilog/WaveView.gtkw"
 [timestart] 0
 [size] 1680 1004
 [pos] -1 -1
-*-6.000000 131 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-8.000000 133 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] TestBench.
 [treeopen] TestBench.TL.
 [treeopen] TestBench.TL.wavectl.
@@ -117,6 +117,28 @@ TestBench.TL.wavegens[1].waveGenn.Waveform[7:0]
 @1401200
 -group_end
 @20000
+-
+-
+@200
+-
+-
+-@adsr
+@88022
+TestBench.TL.adsr.decrementor[15:0]
+@20000
+-
+-
+@8022
+TestBench.TL.adsr.Envolope[7:0]
+@20000
+-
+@20001
+-
+@20000
+-
+-
+@200
+-
 -
 -
 [pattern_trace] 1

@@ -64,6 +64,13 @@ module TopLevel(
         .Waveform()
     );
 
+    ADSR #(.WAVE_DEPTH(WAVE_DEPTH)) adsr
+    (
+        .Clock(Clock),
+        .Reset(Reset),
+        .Envolope()
+    );
+
 
     //Rescale for 8 bit output
     assign Waveform = (wavegens[NUM_WAVEFORM_GENS-1].wavesum >> (NUM_WAVEFORM_GENS-1));//+(WAVE_MAX>>(NUM_WAVEFORM_GENS-1));
