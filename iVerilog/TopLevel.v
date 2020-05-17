@@ -56,7 +56,7 @@ module TopLevel(
         end
     end
 
-    WaveGenController #(.WAVE_DEPTH(WAVE_DEPTH), .ADDR(1)) wavectl
+    WaveGenController #(.WAVE_DEPTH(WAVE_DEPTH), .ADDR(16'h0010)) wavectl
     (
         .Clock(Clock),
         .Reset(Reset),

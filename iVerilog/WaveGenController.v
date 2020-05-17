@@ -41,7 +41,7 @@ module WaveGenController
             incr = 0;
             wavetype = 0;
             pulsewidth = 0;
-
+            busdata = 0;
         end
         else
         begin
@@ -50,6 +50,7 @@ module WaveGenController
         end
     end
 
+    
     assign BusData = BusReadWrite ? 8'hZZ : busdata;
 
     always @(posedge BusClock)
@@ -61,6 +62,8 @@ module WaveGenController
                 case(BusAddress)
                     ADDR+0: busdata <= incr;
                     ADDR+1: busdata <= 8'h00;
+                    ADDR+2: busdata <= {6'h00,wavetype};
+                    ADDR+3: busdata <= pulsewidth;
                     default: busdata <= 8'hZZ;
                 endcase
             end
@@ -69,6 +72,8 @@ module WaveGenController
                 case(BusAddress) 
                     ADDR+0: incr <= BusData; 
                     ADDR+1: if (BusData==1) begin gateopen <= 1; end else begin gateclose <= 1; end
+                    ADDR+2: wavetype <= BusData[1:0];
+                    ADDR+3: pulsewidth <= BusData;
                 endcase
             end
         end

@@ -58,25 +58,46 @@ module TestBench;
     begin
         #50
         
-        addr <= 16'h0001;
+        addr <= 16'h0010; //Incr
         writedata = 8'h3F;
         readwrite <= 1;
-        #2
-        busclk <= 1;
-        #2
-        busclk <= 0;
+        busclk <= 1; #2 busclk <= 0; #2
 
-        #150
-        
-        addr <= 16'h0002;
-        writedata = 8'h01;
+        addr <= 16'h0012; //WaveType
+        writedata = 8'h01; //Square
         readwrite <= 1;
-        #2
-        busclk <= 1;
-        #2
-        busclk <= 0;
+        busclk <= 1; #2 busclk <= 0; #2
+
+        addr <= 16'h0013; //PulseWidth
+        writedata = 8'h3F; 
+        readwrite <= 1;
+        busclk <= 1; #2 busclk <= 0; #2
         
-        #2
+        addr <= 16'h0011; //Gate
+        writedata = 8'h01; //Open
+        readwrite <= 1;
+        busclk <= 1; #2 busclk <= 0; #2
+
+        #50
+
+        addr <= 16'h0010; //Incr
+        writedata = 8'h0F; 
+        readwrite <= 1;
+        busclk <= 1; #2 busclk <= 0; #2
+
+        addr <= 16'h0013; //PulseWidth
+        writedata = 8'h7F; 
+        readwrite <= 1;
+        busclk <= 1; #2 busclk <= 0; #2
+
+        #200
+
+        addr <= 16'h0011; //Gate
+        writedata = 8'h00; //Close
+        readwrite <= 1;
+        busclk <= 1; #2 busclk <= 0; #2
+        
+        #20
 
         writedata <= 0;
         readwrite <= 0;
