@@ -22,9 +22,9 @@ module ADSR
     output reg [23:0] Envelope = 0;
 
 
-    wire [47:0] attackStep = ((WAVE_MAX-Envelope)/Attack);
-    wire [47:0] decayStep = ((Envelope-Sustain)/Decay);
-    wire [47:0] releaseStep = (Envelope/Release);
+    wire [47:0] attackStep = Linear==0 ? ((WAVE_MAX+47'h10000-Envelope)/Attack)+13 : (WAVE_MAX/Attack);
+    wire [47:0] decayStep = Linear==0 ? ((Envelope-Sustain)/Decay)+13 : (WAVE_MAX/Decay);
+    wire [47:0] releaseStep = Linear==0 ? ((Envelope)/Release)+13 : (WAVE_MAX/Release);
 
     always @(posedge Clock)
     begin
@@ -40,10 +40,6 @@ module ADSR
                         begin
                             ADSRstate <= 2'b01;
                         end
-                        else if (Linear == 1)
-                        begin
-                            Envelope <= Envelope + Attack;
-                        end
                         else 
                         begin
                             Envelope <= Envelope + attackStep + 1;
@@ -55,10 +51,6 @@ module ADSR
                         if (Envelope<=Sustain+Decay)
                         begin
                             ADSRstate <= 2'b10;
-                        end
-                        else if (Linear == 1)
-                        begin
-                            Envelope <= Envelope - Decay;
                         end
                         else
                         begin
@@ -74,10 +66,6 @@ module ADSR
                 if (Envelope <= 0+Release)
                 begin
                     Running <= 0;
-                end
-                else if (Linear == 1)
-                begin
-                    Envelope <= Envelope - Release;
                 end
                 else
                 begin

@@ -1,4 +1,5 @@
 
+`timescale 1 ms / 10 us
 
 module TestBench;
 
@@ -35,8 +36,8 @@ module TestBench;
         #100
         reset <= 0;
 
-        //Run for 1000[u]
-        #100000
+        //Run for 5[s]
+        #5000
 
         //Hold reset for 100[u]
         reset <= 1;
@@ -70,10 +71,10 @@ module TestBench;
         `SET_REG(16'h0014, 8'h01); //WaveType = Square
         `SET_REG_24(16'h0015, 24'h3FFFFF); //PulseWidth
         
-        `SET_REG_24(16'h0018, 24'h000500); //Attack
-        `SET_REG_24(16'h001B, 24'h000500); //Decay
+        `SET_REG_24(16'h0018, 24'h010000); //Attack
+        `SET_REG_24(16'h001B, 24'h010000); //Decay
         `SET_REG_24(16'h001E, 24'h7FFFFF); //Sustain
-        `SET_REG_24(16'h0021, 24'h000500); //Release
+        `SET_REG_24(16'h0021, 24'h010000); //Release
 
         `SET_REG(16'h0024, 8'h01); //Linear
 
@@ -82,10 +83,10 @@ module TestBench;
         `SET_REG(16'h0034, 8'h02); //WaveType = Triangle
         `SET_REG_24(16'h0035, 24'h7FFFFF); //PulseWidth
         
-        `SET_REG_24(16'h0038, 24'h000500); //Attack
-        `SET_REG_24(16'h003B, 24'h000500); //Decay
+        `SET_REG_24(16'h0038, 24'h003000); //Attack
+        `SET_REG_24(16'h003B, 24'h003000); //Decay
         `SET_REG_24(16'h003E, 24'h7FFFFF); //Sustain
-        `SET_REG_24(16'h0041, 24'h000500); //Release
+        `SET_REG_24(16'h0041, 24'h003000); //Release
 
         //Start Notes
 
@@ -95,7 +96,7 @@ module TestBench;
 
 
 
-        #20000
+        #1000
 
 
         `SET_REG(16'h0030, 8'h00); //Gate = Close
@@ -103,15 +104,15 @@ module TestBench;
         `SET_REG_24(16'h0011, 24'h00FFFF); //Incr
         `SET_REG_24(16'h0015, 24'h7FFFFF); //PulseWidth
 
-        #3000
+        #300
 
         `SET_REG(16'h0030, 8'h01); //Gate = Open
 
-        #30000
+        #1000
 
         `SET_REG(16'h0010, 8'h00); //Gate = Close
 
-        #20000
+        #1000
 
         `SET_REG(16'h0030, 8'h00); //Gate = Close
 
@@ -125,7 +126,7 @@ module TestBench;
 
     //Clock Process. Oscillates every 1[u] (resulting in a 2[u] period)
     always begin
-        #1 clock = !clock;
+        #0.005 clock = !clock;
     end
 
     //Allow switching between full scale display test and toplevel waveform output
