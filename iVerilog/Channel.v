@@ -28,7 +28,7 @@ module Channel
 
 
     reg gate = 0;
-    wire run = 0;
+    wire running;
     reg [WAVE_DEPTH-1:0] incr = 0;
     reg [1:0] wavetype = 0;
     reg [WAVE_DEPTH-1:0] pulsewidth = 0;
@@ -73,7 +73,7 @@ module Channel
             if (BusReadWrite==0) //Read
             begin
                 case(BusAddress)
-                    ADDR+0: busdata <= {7'h00,run};
+                    ADDR+0: busdata <= {7'h00,running};
                     ADDR+1: busdata <= incr;
                     ADDR+2: busdata <= {6'h00,wavetype};
                     ADDR+3: busdata <= pulsewidth;

@@ -27,46 +27,36 @@ module TopLevel(
     //Generate loop to automatically hook up multiple waveform generators
     genvar gi;
     for (gi=0; gi<NUM_WAVEFORM_GENS; gi=gi+1) 
-    begin:wavegens
+    begin:channels
 
         wire [WAVE_HIGH_BIT:0] wavesig;
         wire [WAVE_HIGH_BIT*NUM_WAVEFORM_GENS:0] wavesum;
 
         //Connect each wavegen block
-        WaveGen #( .WAVE_DEPTH(WAVE_DEPTH) ) waveGenn
+        
+        Channel #(.WAVE_DEPTH(WAVE_DEPTH), .ADDR(16'h0010 + 16'h0010*gi)) channel
         (
             .Clock(Clock),
             .Reset(Reset),
-            .Run(run),
-            .Incr(8'h0F),
-            .WaveType(gi?2'b10:WaveType),//.WaveType((WaveType+gi)%3),
-            .PulseWidth(pulseWidth),
+            .BusAddress(BusAddress), .BusData(BusData), .BusReadWrite(BusReadWrite), .BusClock(BusClock),
             .Waveform(wavesig)
         );
 
         if (gi == 0)
         begin
-            //First wavegen sum is equal to itself; no previous wavegens
+            //First wavegen sum is equal to itself; no previous channels
             assign wavesum = wavesig;
         end
         else if (gi > 0)
         begin
-            //All other wavegens must add the previous wavegen to itself
-            assign wavesum = wavesig + wavegens[gi-1].wavesum;
+            //All other channels must add the previous wavegen to itself
+            assign wavesum = wavesig + channels[gi-1].wavesum;
         end
     end
 
-    Channel #(.WAVE_DEPTH(WAVE_DEPTH), .ADDR(16'h0010)) channel
-    (
-        .Clock(Clock),
-        .Reset(Reset),
-        .BusAddress(BusAddress), .BusData(BusData), .BusReadWrite(BusReadWrite), .BusClock(BusClock),
-        .Waveform()
-    );
-
 
     //Rescale for 8 bit output
-    assign Waveform = (wavegens[NUM_WAVEFORM_GENS-1].wavesum >> (NUM_WAVEFORM_GENS-1));//+(WAVE_MAX>>(NUM_WAVEFORM_GENS-1));
+    assign Waveform = (channels[NUM_WAVEFORM_GENS-1].wavesum >> (NUM_WAVEFORM_GENS-1));//+(WAVE_MAX>>(NUM_WAVEFORM_GENS-1));
 
 
 

@@ -60,56 +60,59 @@ module TestBench;
     begin
         #50
         
-        addr <= 16'h0011; //Incr
-        writedata = 8'h0F;
-        readwrite <= 1;
-        busclk <= 1; #2 busclk <= 0; #2
+        //Note 1
+        addr <= 16'h0011; writedata = 8'h0F; //Incr
+        readwrite <= 1; busclk <= 1; #2 busclk <= 0; #2
 
-        addr <= 16'h0012; //WaveType
-        writedata = 8'h01; //Square
-        readwrite <= 1;
-        busclk <= 1; #2 busclk <= 0; #2
+        addr <= 16'h0012; writedata = 8'h01; //WaveType = Square
+        readwrite <= 1; busclk <= 1; #2 busclk <= 0; #2
 
-        addr <= 16'h0013; //PulseWidth
-        writedata = 8'h3F; 
-        readwrite <= 1;
-        busclk <= 1; #2 busclk <= 0; #2
+        addr <= 16'h0013; writedata = 8'h3F; //PulseWidth 
+        readwrite <= 1; busclk <= 1; #2 busclk <= 0; #2
         
-        addr <= 16'h0014; //Sustain
-        writedata = 8'h7F;
-        readwrite <= 1;
-        busclk <= 1; #2 busclk <= 0; #2
+        addr <= 16'h0014; writedata = 8'h7F; //Sustain
+        readwrite <= 1; busclk <= 1; #2 busclk <= 0; #2
 
-        addr <= 16'h0010; //Gate
-        writedata = 8'h01; //Open
-        readwrite <= 1;
-        busclk <= 1; #2 busclk <= 0; #2
+        //Note 2
+        addr <= 16'h0021; writedata = 8'h03; //Incr
+        readwrite <= 1; busclk <= 1; #2 busclk <= 0; #2
+
+        addr <= 16'h0022; writedata = 8'h10; //WaveType = Square
+        readwrite <= 1; busclk <= 1; #2 busclk <= 0; #2
+
+        addr <= 16'h0023; writedata = 8'h00; //PulseWidth 
+        readwrite <= 1; busclk <= 1; #2 busclk <= 0; #2
+        
+        addr <= 16'h0024; writedata = 8'hAF; //Sustain
+        readwrite <= 1; busclk <= 1; #2 busclk <= 0; #2
+
+        //Start Notes
+        addr <= 16'h0010; writedata = 8'h01; //Gate = Open
+        readwrite <= 1; busclk <= 1; #2 busclk <= 0; #2
+
+        addr <= 16'h0020; writedata = 8'h01; //Gate = Open
+        readwrite <= 1; busclk <= 1; #2 busclk <= 0; #2
 
         #1000
 
-        addr <= 16'h0011; //Incr
-        writedata = 8'h05; 
-        readwrite <= 1;
-        busclk <= 1; #2 busclk <= 0; #2
+        addr <= 16'h0011; writedata = 8'h05; //Incr 
+        readwrite <= 1; busclk <= 1; #2 busclk <= 0; #2
 
-        addr <= 16'h0013; //PulseWidth
-        writedata = 8'h7F; 
-        readwrite <= 1;
-        busclk <= 1; #2 busclk <= 0; #2
+        addr <= 16'h0013; writedata = 8'h7F; //PulseWidth 
+        readwrite <= 1; busclk <= 1; #2 busclk <= 0; #2
 
         #3000
 
-        addr <= 16'h0015; //Linear
-        writedata = 8'h01;
-        readwrite <= 1;
-        busclk <= 1; #2 busclk <= 0; #2
+        addr <= 16'h0015; writedata = 8'h01; //Linear
+        readwrite <= 1; busclk <= 1; #2 busclk <= 0; #2
 
         #1000
 
-        addr <= 16'h0010; //Gate
-        writedata = 8'h00; //Close
-        readwrite <= 1;
-        busclk <= 1; #2 busclk <= 0; #2
+        addr <= 16'h0010; writedata = 8'h00; //Gate = Close
+        readwrite <= 1; busclk <= 1; #2 busclk <= 0; #2
+
+        addr <= 16'h0020; writedata = 8'h00; //Gate = Open
+        readwrite <= 1; busclk <= 1; #2 busclk <= 0; #2
         
         #20
 
