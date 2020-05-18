@@ -24,14 +24,18 @@ module WaveGen
     reg [23:0] counter = 0;
     
 
-    assign Waveform = WaveTypeSelect(Reset, Run, WaveType, counter, PulseWidth);
-    function automatic [7:0] WaveTypeSelect(
-        input reset, gate,
+    wire [47:0] mulp = (WAVE_MAX*counter);
+    wire [47:0] muln = WAVE_MAX*(WAVE_MAX-counter);
+    assign Waveform = WaveTypeSelect(Reset, Run, WaveType, counter, PulseWidth, mulp, muln);
+    function automatic [23:0] WaveTypeSelect(
+        input reset, run,
         input [1:0] wavetype,
         input [23:0] cntr,
-        input [23:0] pulsewidth
+        input [23:0] pulsewidth,
+        input [47:0] mulp,
+        input [47:0] muln
     );
-        if (reset==1 || gate == 0)
+        if (reset==1 || run == 0)
         begin
             WaveTypeSelect = cntr+(WAVE_MAX>>1);
         end
@@ -45,12 +49,12 @@ module WaveGen
                 //Advanced Triangle (Sawtooth)
                 2'b10 : WaveTypeSelect = 
                     (cntr<=pulsewidth ? 
-                    ((WAVE_MAX*cntr)/pulsewidth) : // (1/scaling) * x for upwards line
-                    (WAVE_MAX*(WAVE_MAX-cntr)/(WAVE_MAX-pulsewidth))); // (1/(1-scaling) * x) for downwards line
+                    (mulp/pulsewidth) : // (1/scaling) * x for upwards line
+                    (muln/(WAVE_MAX-pulsewidth))); // (1/(1-scaling) * x) for downwards line
                 //Sample
                 2'b11 : WaveTypeSelect = 0; //TODO: Implement
                 //Catch all
-                default : WaveTypeSelect = 2'bZ;
+                default : WaveTypeSelect = 24'bZ;
             endcase
         end
     endfunction
@@ -66,7 +70,7 @@ module WaveGen
             if (counter + Incr >= WAVE_MAX)
             begin
                 //Reset counter back to bottom
-                counter <= 8'h00;
+                counter <= 24'h000000;
             end
             else
             begin

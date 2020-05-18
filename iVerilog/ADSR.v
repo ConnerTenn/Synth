@@ -26,9 +26,9 @@ module ADSR
     reg [47:0] decrementor = WAVE_MAX;
 
 
-    wire [47:0] attackStep = ((WAVE_MAX-Attack)*(WAVE_MAX-Envelope))>>8;
-    wire [47:0] decayStep = ((WAVE_MAX-Decay)*(Envelope-Sustain))>>8;
-    wire [47:0] releaseStep = ((WAVE_MAX-Release)*Envelope)>>8;
+    wire [47:0] attackStep = ((WAVE_MAX-Envelope)/Attack);
+    wire [47:0] decayStep = ((Envelope-Sustain)/Decay);
+    wire [47:0] releaseStep = (Envelope/Release);
 
     always @(posedge Clock)
     begin
@@ -38,59 +38,37 @@ module ADSR
             2'b00: //Attack
                 if (Running == 1)
                 begin
-                    if (Envelope==WAVE_MAX)
+                    if (Envelope>=WAVE_MAX-Attack)
                     begin
                         ADSRstate <= 2'b01;
                         decrementor <= WAVE_MAX;
                     end
                     else if (Linear == 1)
                     begin
-                        if (decrementor==WAVE_MAX-Attack)
-                        begin
-                            Envelope <= Envelope + 1;
-                            decrementor <= WAVE_MAX;
-                        end
-                        else begin 
-                            decrementor <= decrementor - 1; 
-                        end
+                        Envelope <= Envelope + Attack;
+                        decrementor <= WAVE_MAX;
                     end
-                    else if (decrementor>=WAVE_MAX)
+                    else 
                     begin
-                        Envelope <= Envelope + 1;
-                        decrementor <= decrementor - WAVE_MAX/2;
-                    end
-                    else
-                    begin
-                        decrementor <= decrementor + attackStep+1;
+                        Envelope <= Envelope + attackStep + 1;
                     end
                 end
                 
             2'b01: //Decay
                 begin
-                    if (Envelope==Sustain)
+                    if (Envelope<=Sustain+Decay)
                     begin
                         ADSRstate <= 2'b10;
                         decrementor <= 4*WAVE_MAX;
                     end
                     else if (Linear == 1)
                     begin
-                        if (decrementor==WAVE_MAX-Decay)
-                        begin
-                            Envelope <= Envelope - 1;
-                            decrementor <= WAVE_MAX;
-                        end
-                        else begin 
-                            decrementor <= decrementor - 1; 
-                        end
-                    end
-                    else if (decrementor>=WAVE_MAX)
-                    begin
-                        Envelope <= Envelope - 1;
-                        decrementor <= decrementor - WAVE_MAX/2;
+                        Envelope <= Envelope - Decay;
+                        decrementor <= WAVE_MAX;
                     end
                     else
                     begin
-                        decrementor <= decrementor + decayStep + 1;
+                        Envelope <= Envelope - decayStep - 1;
                     end
                 end
             2'b10: //Sustain
@@ -103,29 +81,18 @@ module ADSR
                 end
             2'b11: //Release
                 begin
-                    if (Envelope == 0)
+                    if (Envelope <= 0+Release)
                     begin
                         Running <= 0;
                     end
                     else if (Linear == 1)
                     begin
-                        if (decrementor==WAVE_MAX-Release)
-                        begin
-                            Envelope <= Envelope - 1;
-                            decrementor <= WAVE_MAX;
-                        end
-                        else begin 
-                            decrementor <= decrementor - 1; 
-                        end
-                    end
-                    else if (decrementor>=WAVE_MAX)
-                    begin
-                        Envelope <= Envelope - 1;
-                        decrementor <= decrementor - WAVE_MAX/2;
+                        Envelope <= Envelope - Release;
+                        decrementor <= WAVE_MAX;
                     end
                     else
                     begin
-                        decrementor <= decrementor + releaseStep + 1;
+                        Envelope <= Envelope - releaseStep - 1;
                     end
                 end
             endcase

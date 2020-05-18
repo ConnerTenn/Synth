@@ -1,24 +1,23 @@
 [*]
 [*] GTKWave Analyzer v3.3.104 (w)1999-2020 BSI
-[*] Sun May 17 21:39:03 2020
+[*] Mon May 18 05:20:44 2020
 [*]
 [dumpfile] "/home/conner/Dev/Synth/iVerilog/TestBench.vcd"
-[dumpfile_mtime] "Sun May 17 21:38:51 2020"
-[dumpfile_size] 978602
+[dumpfile_mtime] "Mon May 18 05:19:42 2020"
+[dumpfile_size] 28940743
 [savefile] "/home/conner/Dev/Synth/iVerilog/WaveView.gtkw"
 [timestart] 0
 [size] 1680 1004
 [pos] -1 -1
-*-10.000000 1761 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-14.000000 623 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] TestBench.
 [treeopen] TestBench.TL.
-[treeopen] TestBench.TL.channel.
-[treeopen] TestBench.TL.wavegens[0].
-[treeopen] TestBench.TL.wavegens[0].waveGenn.
-[treeopen] TestBench.TL.wavegens[1].
-[treeopen] TestBench.TL.wavegens[1].waveGenn.
+[treeopen] TestBench.TL.channels[0].
+[treeopen] TestBench.TL.channels[0].channel.
+[treeopen] TestBench.TL.channels[1].
+[treeopen] TestBench.TL.channels[1].channel.
 [sst_width] 231
-[signals_width] 226
+[signals_width] 271
 [sst_expanded] 1
 [sst_vpaned_height] 298
 @200
@@ -26,139 +25,58 @@
 @28
 TestBench.clock
 TestBench.reset
-@c88022
-TestBench.waveform[7:0]
-@28
-(0)TestBench.waveform[7:0]
-(1)TestBench.waveform[7:0]
-(2)TestBench.waveform[7:0]
-(3)TestBench.waveform[7:0]
-(4)TestBench.waveform[7:0]
-(5)TestBench.waveform[7:0]
-(6)TestBench.waveform[7:0]
-(7)TestBench.waveform[7:0]
-@1401200
--group_end
-@20000
--
--
--
--
-@200
--
--@TL
 @22
 TestBench.TL.BusAddress[15:0]
 TestBench.TL.BusData[7:0]
 @28
 TestBench.TL.BusReadWrite
 TestBench.TL.BusClock
+@88022
+TestBench.waveform[23:0]
+@20000
+-
+-
+-
 @200
 -
--
--@channel
+-@channels[0]
 @28
-TestBench.TL.channel.gate
+TestBench.TL.channels[0].channel.gate
+TestBench.TL.channels[0].channel.running
 @22
-TestBench.TL.channel.incr[7:0]
+TestBench.TL.channels[0].channel.incr[23:0]
+@88022
+TestBench.TL.channels[0].channel.Waveform[23:0]
+@20000
+-
 @28
-TestBench.TL.channel.wavetype[1:0]
+TestBench.TL.channels[0].channel.adsr.ADSRstate[1:0]
+@88022
+TestBench.TL.channels[0].channel.adsr.decrementor[47:0]
+TestBench.TL.channels[0].channel.adsr.Envelope[23:0]
+@20000
+-
+@200
+-
+-@channels[1]
+@28
+TestBench.TL.channels[1].channel.gate
+TestBench.TL.channels[1].channel.running
 @22
-TestBench.TL.channel.pulsewidth[7:0]
-TestBench.TL.channel.sustain[7:0]
+TestBench.TL.channels[1].channel.incr[23:0]
+@88022
+TestBench.TL.channels[1].channel.Waveform[23:0]
 @20000
--
-@8022
-TestBench.TL.channel.Waveform[7:0]
-@20000
--
--
-@200
--@wavegen
-@8022
-TestBench.TL.channel.wavegen.counter[7:0]
-TestBench.TL.channel.wavegen.Waveform[7:0]
-@20000
--
--
-@200
--@adsr
-@28
-TestBench.TL.channel.adsr.state[1:0]
-@8022
-TestBench.TL.channel.adsr.decrementor[15:0]
-@20000
--
-@8022
-TestBench.TL.channel.adsr.Envolope[7:0]
-@20000
--
--
--
-@200
--
--
--@wavegens[0]
-@28
-TestBench.TL.wavegens[0].waveGenn.WaveType[1:0]
-@8022
-TestBench.TL.wavegens[0].waveGenn.counter[7:0]
-@20000
--
-@8022
-TestBench.TL.wavegens[0].waveGenn.Waveform[7:0]
-@20000
--
 -
 @28
-TestBench.TL.wavegens[0].waveGenn.Gate
-@200
--
--@wavegens[1]
-@c00028
-TestBench.TL.wavegens[1].waveGenn.WaveType[1:0]
-@28
-(0)TestBench.TL.wavegens[1].waveGenn.WaveType[1:0]
-(1)TestBench.TL.wavegens[1].waveGenn.WaveType[1:0]
-@1401200
--group_end
-@8022
-TestBench.TL.wavegens[1].waveGenn.counter[7:0]
+TestBench.TL.channels[1].channel.adsr.ADSRstate[1:0]
+@88022
+TestBench.TL.channels[1].channel.adsr.decrementor[47:0]
 @20000
 -
--
--
-@c08022
-TestBench.TL.wavegens[1].waveGenn.Waveform[7:0]
-@28
-(0)TestBench.TL.wavegens[1].waveGenn.Waveform[7:0]
-(1)TestBench.TL.wavegens[1].waveGenn.Waveform[7:0]
-(2)TestBench.TL.wavegens[1].waveGenn.Waveform[7:0]
-(3)TestBench.TL.wavegens[1].waveGenn.Waveform[7:0]
-(4)TestBench.TL.wavegens[1].waveGenn.Waveform[7:0]
-(5)TestBench.TL.wavegens[1].waveGenn.Waveform[7:0]
-(6)TestBench.TL.wavegens[1].waveGenn.Waveform[7:0]
-(7)TestBench.TL.wavegens[1].waveGenn.Waveform[7:0]
-@1401200
--group_end
+@88022
+TestBench.TL.channels[1].channel.adsr.Envelope[23:0]
 @20000
--
--
-@200
--
--
-@20000
--
--
--
--
--
--
--
--
-@200
--
--
 -
 [pattern_trace] 1
 [pattern_trace] 0

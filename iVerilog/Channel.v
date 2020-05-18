@@ -16,14 +16,15 @@ module Channel
     input Clock, Reset;
     input [15:0] BusAddress; inout [7:0] BusData; input BusReadWrite; input BusClock;
     output [23:0] Waveform;
-
+    
+    reg [15:0] addr = ADDR;
 
     wire [23:0] wavegenout;
     wire [23:0] envelope;
     wire [47:0] mul;
 
     assign mul = (wavegenout * envelope);
-    assign Waveform = (mul>>8) + ((WAVE_MAX/2) - (envelope>>1));
+    assign Waveform = (mul>>24) + ((WAVE_MAX/2) - (envelope>>1));
 
 
     reg gate = 0;
@@ -86,35 +87,35 @@ module Channel
             else //Write
             begin
                 case(BusAddress) 
-                    ADDR+ 0: gate <= BusData[0:0]; 
+                    ADDR+16'h00: gate <= BusData[0:0]; 
 
-                    ADDR+ 1: incr[7:0] <= BusData;
-                    ADDR+ 2: incr[15:8] <= BusData;
-                    ADDR+ 3: incr[23:16] <= BusData;
+                    ADDR+16'h01: incr[7:0] <= BusData;
+                    ADDR+16'h02: incr[15:8] <= BusData;
+                    ADDR+16'h03: incr[23:16] <= BusData;
 
-                    ADDR+ 4: wavetype <= BusData[1:0];
+                    ADDR+16'h04: wavetype <= BusData[1:0];
 
-                    ADDR+ 5: pulsewidth[7:0] <= BusData;
-                    ADDR+ 6: pulsewidth[15:8] <= BusData;
-                    ADDR+ 7: pulsewidth[23:16] <= BusData;
+                    ADDR+16'h05: pulsewidth[7:0] <= BusData;
+                    ADDR+16'h06: pulsewidth[15:8] <= BusData;
+                    ADDR+16'h07: pulsewidth[23:16] <= BusData;
 
-                    ADDR+ 8: attack[7:0] <= BusData;
-                    ADDR+ 9: attack[15:8] <= BusData;
-                    ADDR+10: attack[23:16] <= BusData;
+                    ADDR+16'h08: attack[7:0] <= BusData;
+                    ADDR+16'h09: attack[15:8] <= BusData;
+                    ADDR+16'h0A: attack[23:16] <= BusData;
 
-                    ADDR+11: decay[7:0] <= BusData;
-                    ADDR+12: decay[15:8] <= BusData;
-                    ADDR+13: decay[23:16] <= BusData;
+                    ADDR+16'h0B: decay[7:0] <= BusData;
+                    ADDR+16'h0C: decay[15:8] <= BusData;
+                    ADDR+16'h0D: decay[23:16] <= BusData;
 
-                    ADDR+14: sustain[7:0] <= BusData;
-                    ADDR+15: sustain[15:8] <= BusData;
-                    ADDR+16: sustain[23:16] <= BusData;
+                    ADDR+16'h0E: sustain[7:0] <= BusData;
+                    ADDR+16'h0F: sustain[15:8] <= BusData;
+                    ADDR+16'h10: sustain[23:16] <= BusData;
 
-                    ADDR+17: releasew[7:0] <= BusData;
-                    ADDR+18: releasew[15:8] <= BusData;
-                    ADDR+19: releasew[23:16] <= BusData;
+                    ADDR+16'h11: releasew[7:0] <= BusData;
+                    ADDR+16'h12: releasew[15:8] <= BusData;
+                    ADDR+16'h13: releasew[23:16] <= BusData;
 
-                    ADDR+20: linear <= BusData[0:0];
+                    ADDR+'h14: linear <= BusData[0:0];
                 endcase
             end
         end

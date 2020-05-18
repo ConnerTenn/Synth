@@ -4,8 +4,7 @@ module TopLevel(
     Clock,
     Reset,
     BusAddress, BusData, BusReadWrite, BusClock,
-    Waveform,
-    WaveType
+    Waveform
 );
     parameter WAVE_MAX = 24'hFFFFFF;
 
@@ -13,7 +12,6 @@ module TopLevel(
 
     input Clock, Reset;
     input [15:0] BusAddress; inout [7:0] BusData; input BusReadWrite; input BusClock;
-    input [1:0] WaveType;
     output [23:0] Waveform;
 
     reg run = 0;
@@ -30,7 +28,7 @@ module TopLevel(
 
         //Connect each wavegen block
         
-        Channel #(.ADDR(16'h0010 + 16'h0010*gi)) channel
+        Channel #(.ADDR(16'h0010 + 16'h0020*gi)) channel
         (
             .Clock(Clock),
             .Reset(Reset),
