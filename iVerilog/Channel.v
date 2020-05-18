@@ -34,6 +34,7 @@ module Channel
     reg [WAVE_DEPTH-1:0] pulsewidth = 0;
     reg [WAVE_DEPTH-1:0] sustain = 0;
     reg linear = 0;
+    wire [1:0] adsrstate;
 
 
     WaveGen #( .WAVE_DEPTH(WAVE_DEPTH) ) wavegen
@@ -55,6 +56,7 @@ module Channel
         .Running(running),
         .Sustain(sustain),
         .Linear(linear),
+        .ADSRstate(adsrstate),
         .Envelope(envelope)
     );
 
@@ -77,6 +79,7 @@ module Channel
                     ADDR+3: busdata <= pulsewidth;
                     ADDR+4: busdata <= sustain;
                     ADDR+5: busdata <= {7'h00,linear};
+                    ADDR+6: busdata <= {6'h00,adsrstate};
                     default: busdata <= 8'hZZ;
                 endcase
             end

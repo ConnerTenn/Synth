@@ -10,6 +10,7 @@ module ADSR
     Running,
     Sustain,
     Linear,
+    ADSRstate,
     Envelope
 );
 
@@ -20,9 +21,9 @@ module ADSR
     output reg Running = 0;
     input [WAVE_DEPTH-1:0] Sustain;
     input Linear;
+    output reg [1:0] ADSRstate = 2'b00;
     output reg [WAVE_DEPTH-1:0] Envelope = 0;
 
-    reg [1:0] state = 2'b00;
 
     // reg [2*WAVE_DEPTH-1:0] decrementor = WAVE_MAX;
     reg [2*WAVE_DEPTH-1:0] decrementor = WAVE_MAX;
@@ -32,13 +33,13 @@ module ADSR
     begin
         if (Reset == 0)
         begin
-            case (state)
+            case (ADSRstate)
             2'b00: //Attack
                 if (Running == 1)
                 begin
                     if (Envelope==WAVE_MAX)
                     begin
-                        state <= state + 1;
+                        ADSRstate <= 2'b01;
                         decrementor <= WAVE_MAX;
                     end
                     else if (Linear == 1)
@@ -60,7 +61,7 @@ module ADSR
                 begin
                     if (Envelope==Sustain)
                     begin
-                        state <= state + 1;
+                        ADSRstate <= 2'b10;
                         decrementor <= 4*WAVE_MAX;
                     end
                     else if (Linear == 1)
@@ -81,7 +82,7 @@ module ADSR
                 begin
                     if (Gate==0)
                     begin
-                        state <= state + 1;
+                        ADSRstate <= 2'b11;
                         decrementor <= WAVE_MAX;
                     end
                 end
@@ -114,7 +115,7 @@ module ADSR
         if (Gate == 1 || Reset == 1)
         begin
             Envelope = 0;
-            state = 2'b00;
+            ADSRstate = 2'b00;
             decrementor = WAVE_MAX;
             if (Gate == 1)
             begin
