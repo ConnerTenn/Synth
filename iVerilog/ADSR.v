@@ -22,10 +22,6 @@ module ADSR
     output reg [23:0] Envelope = 0;
 
 
-    // reg [2*WAVE_DEPTH-1:0] decrementor = WAVE_MAX;
-    reg [47:0] decrementor = WAVE_MAX;
-
-
     wire [47:0] attackStep = ((WAVE_MAX-Envelope)/Attack);
     wire [47:0] decayStep = ((Envelope-Sustain)/Decay);
     wire [47:0] releaseStep = (Envelope/Release);
@@ -34,82 +30,78 @@ module ADSR
     begin
         if (Reset == 0)
         begin
-            case (ADSRstate)
-            2'b00: //Attack
-                if (Running == 1)
+            if (Gate == 1)
+            begin
+                case (ADSRstate)
+                2'b00: //Attack
+                    if (Running == 1)
+                    begin
+                        if (Envelope>=WAVE_MAX-Attack)
+                        begin
+                            ADSRstate <= 2'b01;
+                        end
+                        else if (Linear == 1)
+                        begin
+                            Envelope <= Envelope + Attack;
+                        end
+                        else 
+                        begin
+                            Envelope <= Envelope + attackStep + 1;
+                        end
+                    end
+                    
+                2'b01: //Decay
+                    begin
+                        if (Envelope<=Sustain+Decay)
+                        begin
+                            ADSRstate <= 2'b10;
+                        end
+                        else if (Linear == 1)
+                        begin
+                            Envelope <= Envelope - Decay;
+                        end
+                        else
+                        begin
+                            Envelope <= Envelope - decayStep - 1;
+                        end
+                    end
+                // 2'b10: //Sustain
+                // 2'b11: //Release
+                endcase
+            end
+            else //Release
+            begin
+                if (Envelope <= 0+Release)
                 begin
-                    if (Envelope>=WAVE_MAX-Attack)
-                    begin
-                        ADSRstate <= 2'b01;
-                        decrementor <= WAVE_MAX;
-                    end
-                    else if (Linear == 1)
-                    begin
-                        Envelope <= Envelope + Attack;
-                        decrementor <= WAVE_MAX;
-                    end
-                    else 
-                    begin
-                        Envelope <= Envelope + attackStep + 1;
-                    end
+                    Running <= 0;
                 end
-                
-            2'b01: //Decay
+                else if (Linear == 1)
                 begin
-                    if (Envelope<=Sustain+Decay)
-                    begin
-                        ADSRstate <= 2'b10;
-                        decrementor <= 4*WAVE_MAX;
-                    end
-                    else if (Linear == 1)
-                    begin
-                        Envelope <= Envelope - Decay;
-                        decrementor <= WAVE_MAX;
-                    end
-                    else
-                    begin
-                        Envelope <= Envelope - decayStep - 1;
-                    end
+                    Envelope <= Envelope - Release;
                 end
-            2'b10: //Sustain
+                else
                 begin
-                    if (Gate==0)
-                    begin
-                        ADSRstate <= 2'b11;
-                        decrementor <= WAVE_MAX;
-                    end
+                    Envelope <= Envelope - releaseStep - 1;
                 end
-            2'b11: //Release
-                begin
-                    if (Envelope <= 0+Release)
-                    begin
-                        Running <= 0;
-                    end
-                    else if (Linear == 1)
-                    begin
-                        Envelope <= Envelope - Release;
-                        decrementor <= WAVE_MAX;
-                    end
-                    else
-                    begin
-                        Envelope <= Envelope - releaseStep - 1;
-                    end
-                end
-            endcase
-        end
+            end
+        end //If (Reset == 0)
     end
 
-    always @(posedge Gate or Reset)
+    always @(Gate or Reset)
     begin
         if (Gate == 1 || Reset == 1)
         begin
             Envelope = 0;
             ADSRstate = 2'b00;
-            decrementor = WAVE_MAX;
             if (Gate == 1)
             begin
                 Running = 1;
             end
+        end
+
+        if (Gate == 0)
+        begin
+            ADSRstate <= 2'b11;
         end
     end
 

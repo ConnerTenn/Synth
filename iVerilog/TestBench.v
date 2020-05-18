@@ -102,6 +102,10 @@ module TestBench;
 
         #20000
 
+
+        addr <= 16'h0030; writedata = 8'h00; //Gate = Close
+        readwrite <= 1; busclk <= 1; #2 busclk <= 0; #2
+
         // addr <= 16'h0011; writedata = 8'h05; //Incr 
         // readwrite <= 1; busclk <= 1; #2 busclk <= 0; #2
 
@@ -113,8 +117,6 @@ module TestBench;
         addr <= 16'h0010; writedata = 8'h00; //Gate = Close
         readwrite <= 1; busclk <= 1; #2 busclk <= 0; #2
 
-        addr <= 16'h0030; writedata = 8'h00; //Gate = Close
-        readwrite <= 1; busclk <= 1; #2 busclk <= 0; #2
         
         #20
 

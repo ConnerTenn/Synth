@@ -1,15 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.3.104 (w)1999-2020 BSI
-[*] Mon May 18 05:20:44 2020
+[*] Mon May 18 05:26:08 2020
 [*]
 [dumpfile] "/home/conner/Dev/Synth/iVerilog/TestBench.vcd"
-[dumpfile_mtime] "Mon May 18 05:19:42 2020"
-[dumpfile_size] 28940743
+[dumpfile_mtime] "Mon May 18 05:25:57 2020"
+[dumpfile_size] 28939986
 [savefile] "/home/conner/Dev/Synth/iVerilog/WaveView.gtkw"
-[timestart] 0
+[timestart] 1190
 [size] 1680 1004
 [pos] -1 -1
-*-14.000000 623 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-14.000000 50214 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] TestBench.
 [treeopen] TestBench.TL.
 [treeopen] TestBench.TL.channels[0].
@@ -52,7 +52,6 @@ TestBench.TL.channels[0].channel.Waveform[23:0]
 @28
 TestBench.TL.channels[0].channel.adsr.ADSRstate[1:0]
 @88022
-TestBench.TL.channels[0].channel.adsr.decrementor[47:0]
 TestBench.TL.channels[0].channel.adsr.Envelope[23:0]
 @20000
 -
@@ -70,10 +69,6 @@ TestBench.TL.channels[1].channel.Waveform[23:0]
 -
 @28
 TestBench.TL.channels[1].channel.adsr.ADSRstate[1:0]
-@88022
-TestBench.TL.channels[1].channel.adsr.decrementor[47:0]
-@20000
--
 @88022
 TestBench.TL.channels[1].channel.adsr.Envelope[23:0]
 @20000
