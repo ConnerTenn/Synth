@@ -32,9 +32,9 @@ module Channel
     reg [WAVE_DEPTH-1:0] incr = 0;
     reg [1:0] wavetype = 0;
     reg [WAVE_DEPTH-1:0] pulsewidth = 0;
-    reg [WAVE_DEPTH-1:0] sustain = 0;
     reg linear = 0;
     wire [1:0] adsrstate;
+    reg [WAVE_DEPTH-1:0] attack = 0, decay = 0, sustain = 0, releasew = 0;
 
 
     WaveGen #( .WAVE_DEPTH(WAVE_DEPTH) ) wavegen
@@ -54,9 +54,9 @@ module Channel
         .Reset(Reset),
         .Gate(gate),
         .Running(running),
-        .Sustain(sustain),
         .Linear(linear),
         .ADSRstate(adsrstate),
+        .Attack(attack), .Decay(decay), .Sustain(sustain), .Release(releasew),
         .Envelope(envelope)
     );
 
@@ -77,9 +77,12 @@ module Channel
                     ADDR+1: busdata <= incr;
                     ADDR+2: busdata <= {6'h00,wavetype};
                     ADDR+3: busdata <= pulsewidth;
-                    ADDR+4: busdata <= sustain;
-                    ADDR+5: busdata <= {7'h00,linear};
-                    ADDR+6: busdata <= {6'h00,adsrstate};
+                    ADDR+4: busdata <= attack;
+                    ADDR+5: busdata <= decay;
+                    ADDR+6: busdata <= sustain;
+                    ADDR+7: busdata <= releasew;
+                    ADDR+8: busdata <= {7'h00,linear};
+                    ADDR+9: busdata <= {6'h00,adsrstate};
                     default: busdata <= 8'hZZ;
                 endcase
             end
@@ -90,8 +93,11 @@ module Channel
                     ADDR+1: incr <= BusData;
                     ADDR+2: wavetype <= BusData[1:0];
                     ADDR+3: pulsewidth <= BusData;
-                    ADDR+4: sustain <= BusData;
-                    ADDR+5: linear <= BusData[0:0];
+                    ADDR+4: attack <= BusData;
+                    ADDR+5: decay <= BusData;
+                    ADDR+6: sustain <= BusData;
+                    ADDR+7: releasew <= BusData;
+                    ADDR+8: linear <= BusData[0:0];
                 endcase
             end
         end

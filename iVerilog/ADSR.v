@@ -8,9 +8,9 @@ module ADSR
     Reset,
     Gate,
     Running,
-    Sustain,
     Linear,
     ADSRstate,
+    Attack, Decay, Sustain, Release,
     Envelope
 );
 
@@ -19,15 +19,19 @@ module ADSR
     input Clock, Reset;
     input Gate;
     output reg Running = 0;
-    input [WAVE_DEPTH-1:0] Sustain;
     input Linear;
     output reg [1:0] ADSRstate = 2'b00;
+    input [WAVE_DEPTH-1:0] Attack, Decay, Sustain, Release;
     output reg [WAVE_DEPTH-1:0] Envelope = 0;
 
 
     // reg [2*WAVE_DEPTH-1:0] decrementor = WAVE_MAX;
     reg [2*WAVE_DEPTH-1:0] decrementor = WAVE_MAX;
 
+
+    wire [2*WAVE_DEPTH-1:0] attackStep = ((8'hFF-Attack)*(WAVE_MAX-Envelope))>>8;
+    wire [2*WAVE_DEPTH-1:0] decayStep = ((8'hFF-Decay)*(Envelope-Sustain))>>8;
+    wire [2*WAVE_DEPTH-1:0] releaseStep = ((8'hFF-Release)*Envelope)>>8;
 
     always @(posedge Clock)
     begin
@@ -44,7 +48,14 @@ module ADSR
                     end
                     else if (Linear == 1)
                     begin
-                        Envelope <= Envelope + 1;
+                        if (decrementor==WAVE_MAX-Attack)
+                        begin
+                            Envelope <= Envelope + 1;
+                            decrementor <= WAVE_MAX;
+                        end
+                        else begin 
+                            decrementor <= decrementor - 1; 
+                        end
                     end
                     else if (decrementor>=WAVE_MAX)
                     begin
@@ -53,7 +64,7 @@ module ADSR
                     end
                     else
                     begin
-                        decrementor <= decrementor + (WAVE_MAX-Envelope);
+                        decrementor <= decrementor + attackStep+1;
                     end
                 end
                 
@@ -66,7 +77,14 @@ module ADSR
                     end
                     else if (Linear == 1)
                     begin
-                        Envelope <= Envelope - 1;
+                        if (decrementor==WAVE_MAX-Decay)
+                        begin
+                            Envelope <= Envelope - 1;
+                            decrementor <= WAVE_MAX;
+                        end
+                        else begin 
+                            decrementor <= decrementor - 1; 
+                        end
                     end
                     else if (decrementor>=WAVE_MAX)
                     begin
@@ -75,7 +93,7 @@ module ADSR
                     end
                     else
                     begin
-                        decrementor <= decrementor + (Envelope-Sustain);
+                        decrementor <= decrementor + decayStep + 1;
                     end
                 end
             2'b10: //Sustain
@@ -94,7 +112,14 @@ module ADSR
                     end
                     else if (Linear == 1)
                     begin
-                        Envelope <= Envelope - 1;
+                        if (decrementor==WAVE_MAX-Release)
+                        begin
+                            Envelope <= Envelope - 1;
+                            decrementor <= WAVE_MAX;
+                        end
+                        else begin 
+                            decrementor <= decrementor - 1; 
+                        end
                     end
                     else if (decrementor>=WAVE_MAX)
                     begin
@@ -103,7 +128,7 @@ module ADSR
                     end
                     else
                     begin
-                        decrementor <= decrementor + (Envelope);
+                        decrementor <= decrementor + releaseStep + 1;
                     end
                 end
             endcase

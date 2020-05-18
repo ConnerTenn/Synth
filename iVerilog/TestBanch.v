@@ -70,7 +70,16 @@ module TestBench;
         addr <= 16'h0013; writedata = 8'h3F; //PulseWidth 
         readwrite <= 1; busclk <= 1; #2 busclk <= 0; #2
         
-        addr <= 16'h0014; writedata = 8'h7F; //Sustain
+        addr <= 16'h0014; writedata = 8'h02; //Attack
+        readwrite <= 1; busclk <= 1; #2 busclk <= 0; #2
+        addr <= 16'h0015; writedata = 8'h05; //Decay
+        readwrite <= 1; busclk <= 1; #2 busclk <= 0; #2
+        addr <= 16'h0016; writedata = 8'h7F; //Sustain
+        readwrite <= 1; busclk <= 1; #2 busclk <= 0; #2
+        addr <= 16'h0017; writedata = 8'h05; //Release
+        readwrite <= 1; busclk <= 1; #2 busclk <= 0; #2
+
+        addr <= 16'h0018; writedata = 8'h01; //Linear
         readwrite <= 1; busclk <= 1; #2 busclk <= 0; #2
 
         //Note 2
@@ -83,7 +92,13 @@ module TestBench;
         addr <= 16'h0023; writedata = 8'h00; //PulseWidth 
         readwrite <= 1; busclk <= 1; #2 busclk <= 0; #2
         
-        addr <= 16'h0024; writedata = 8'hAF; //Sustain
+        addr <= 16'h0024; writedata = 8'h02; //Attack
+        readwrite <= 1; busclk <= 1; #2 busclk <= 0; #2
+        addr <= 16'h0025; writedata = 8'h05; //Decay
+        readwrite <= 1; busclk <= 1; #2 busclk <= 0; #2
+        addr <= 16'h0026; writedata = 8'h7F; //Sustain
+        readwrite <= 1; busclk <= 1; #2 busclk <= 0; #2
+        addr <= 16'h0027; writedata = 8'h05; //Release
         readwrite <= 1; busclk <= 1; #2 busclk <= 0; #2
 
         //Start Notes
@@ -101,12 +116,7 @@ module TestBench;
         addr <= 16'h0013; writedata = 8'h7F; //PulseWidth 
         readwrite <= 1; busclk <= 1; #2 busclk <= 0; #2
 
-        #3000
-
-        addr <= 16'h0015; writedata = 8'h01; //Linear
-        readwrite <= 1; busclk <= 1; #2 busclk <= 0; #2
-
-        #1000
+        #4000
 
         addr <= 16'h0010; writedata = 8'h00; //Gate = Close
         readwrite <= 1; busclk <= 1; #2 busclk <= 0; #2
