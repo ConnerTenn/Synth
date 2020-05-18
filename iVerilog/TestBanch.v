@@ -4,7 +4,7 @@ module TestBench;
 
     reg clock = 0, reset = 1;
     reg [1:0] wavetype = 2'b00;
-    wire [7:0] waveform, wavebuff;
+    wire [23:0] waveform, wavebuff;
 
     reg [15:0] addr = 0;
     wire [7:0] data;
@@ -108,7 +108,7 @@ module TestBench;
         addr <= 16'h0020; writedata = 8'h01; //Gate = Open
         readwrite <= 1; busclk <= 1; #2 busclk <= 0; #2
 
-        #1000
+        #2000
 
         addr <= 16'h0011; writedata = 8'h05; //Incr 
         readwrite <= 1; busclk <= 1; #2 busclk <= 0; #2
@@ -116,7 +116,7 @@ module TestBench;
         addr <= 16'h0013; writedata = 8'h7F; //PulseWidth 
         readwrite <= 1; busclk <= 1; #2 busclk <= 0; #2
 
-        #4000
+        #3000
 
         addr <= 16'h0010; writedata = 8'h00; //Gate = Close
         readwrite <= 1; busclk <= 1; #2 busclk <= 0; #2

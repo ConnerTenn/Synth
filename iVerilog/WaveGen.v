@@ -2,10 +2,7 @@
 
 
 
-module WaveGen 
-#(
-    parameter WAVE_DEPTH=8
-) 
+module WaveGen
 (
     Clock,
     Reset,
@@ -15,25 +12,24 @@ module WaveGen
     PulseWidth,
     Waveform
 );
-    parameter WAVE_HIGH_BIT=WAVE_DEPTH-1;
-    parameter WAVE_MAX = (1<<WAVE_DEPTH)-1;
+    parameter WAVE_MAX = 24'hFFFFFF;
 
     input Clock, Reset;
     input Run;
-    input [WAVE_HIGH_BIT:0] Incr;
+    input [23:0] Incr;
     input [1:0] WaveType;
-    input [WAVE_HIGH_BIT:0] PulseWidth;
-    output [WAVE_HIGH_BIT:0] Waveform;
+    input [23:0] PulseWidth;
+    output [23:0] Waveform;
 
-    reg [WAVE_HIGH_BIT:0] counter = 0;
+    reg [23:0] counter = 0;
     
 
     assign Waveform = WaveTypeSelect(Reset, Run, WaveType, counter, PulseWidth);
     function automatic [7:0] WaveTypeSelect(
         input reset, gate,
         input [1:0] wavetype,
-        input [WAVE_HIGH_BIT:0] cntr,
-        input [WAVE_HIGH_BIT:0] pulsewidth
+        input [23:0] cntr,
+        input [23:0] pulsewidth
     );
         if (reset==1 || gate == 0)
         begin

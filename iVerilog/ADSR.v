@@ -1,8 +1,5 @@
 
 module ADSR
-#(
-    parameter WAVE_DEPTH=8
-) 
 (
     Clock, 
     Reset,
@@ -14,24 +11,24 @@ module ADSR
     Envelope
 );
 
-    parameter WAVE_MAX = (1<<WAVE_DEPTH)-1;
+    parameter WAVE_MAX = 24'hFFFFFF;
 
     input Clock, Reset;
     input Gate;
     output reg Running = 0;
     input Linear;
     output reg [1:0] ADSRstate = 2'b00;
-    input [WAVE_DEPTH-1:0] Attack, Decay, Sustain, Release;
-    output reg [WAVE_DEPTH-1:0] Envelope = 0;
+    input [23:0] Attack, Decay, Sustain, Release;
+    output reg [23:0] Envelope = 0;
 
 
     // reg [2*WAVE_DEPTH-1:0] decrementor = WAVE_MAX;
-    reg [2*WAVE_DEPTH-1:0] decrementor = WAVE_MAX;
+    reg [47:0] decrementor = WAVE_MAX;
 
 
-    wire [2*WAVE_DEPTH-1:0] attackStep = ((8'hFF-Attack)*(WAVE_MAX-Envelope))>>8;
-    wire [2*WAVE_DEPTH-1:0] decayStep = ((8'hFF-Decay)*(Envelope-Sustain))>>8;
-    wire [2*WAVE_DEPTH-1:0] releaseStep = ((8'hFF-Release)*Envelope)>>8;
+    wire [47:0] attackStep = ((WAVE_MAX-Attack)*(WAVE_MAX-Envelope))>>8;
+    wire [47:0] decayStep = ((WAVE_MAX-Decay)*(Envelope-Sustain))>>8;
+    wire [47:0] releaseStep = ((WAVE_MAX-Release)*Envelope)>>8;
 
     always @(posedge Clock)
     begin

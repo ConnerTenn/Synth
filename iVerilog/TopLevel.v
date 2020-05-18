@@ -7,34 +7,30 @@ module TopLevel(
     Waveform,
     WaveType
 );
-    parameter WAVE_DEPTH=8;
-    parameter WAVE_HIGH_BIT=WAVE_DEPTH-1;
-    parameter WAVE_MAX = (1<<WAVE_DEPTH)-1;
+    parameter WAVE_MAX = 24'hFFFFFF;
 
     parameter NUM_WAVEFORM_GENS=2;
 
     input Clock, Reset;
     input [15:0] BusAddress; inout [7:0] BusData; input BusReadWrite; input BusClock;
     input [1:0] WaveType;
-    output [WAVE_HIGH_BIT:0] Waveform;
+    output [23:0] Waveform;
 
     reg run = 0;
 
-    // wire [WAVE_HIGH_BIT:0] wavesigs [NUM_WAVEFORM_GENS-1:0];
-
-    reg [WAVE_HIGH_BIT:0] pulseWidth = 8'h00;
+    reg [23:0] pulseWidth = 8'h00;
 
     //Generate loop to automatically hook up multiple waveform generators
     genvar gi;
     for (gi=0; gi<NUM_WAVEFORM_GENS; gi=gi+1) 
     begin:channels
 
-        wire [WAVE_HIGH_BIT:0] wavesig;
-        wire [WAVE_HIGH_BIT*NUM_WAVEFORM_GENS:0] wavesum;
+        wire [23:0] wavesig;
+        wire [24*NUM_WAVEFORM_GENS-1:0] wavesum;
 
         //Connect each wavegen block
         
-        Channel #(.WAVE_DEPTH(WAVE_DEPTH), .ADDR(16'h0010 + 16'h0010*gi)) channel
+        Channel #(.ADDR(16'h0010 + 16'h0010*gi)) channel
         (
             .Clock(Clock),
             .Reset(Reset),
