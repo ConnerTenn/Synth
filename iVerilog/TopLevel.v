@@ -14,7 +14,6 @@ module TopLevel(
     input [15:0] BusAddress; inout [7:0] BusData; input BusReadWrite; input BusClock;
     output [23:0] Waveform;
 
-    reg run = 0;
 
     reg [23:0] pulseWidth = 8'h00;
 
@@ -72,19 +71,5 @@ module TopLevel(
         end
     end
 
-
-    initial 
-    begin
-        run <= 1;
-
-        #100;
-
-        run <= 0;
-
-        #40;
-
-        run <= 1;
-
-    end
 
 endmodule

@@ -93,6 +93,7 @@ module ADSR
         begin
             Envelope = 0;
             ADSRstate = 2'b00;
+            Running = 0;
         end
     end
 

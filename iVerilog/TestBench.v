@@ -31,16 +31,16 @@ module TestBench;
         #2
         scale <= 0;
 
-        //Hold reset for 10[u]
-        #10
+        //Hold reset for 100[u]
+        #100
         reset <= 0;
 
         //Run for 1000[u]
         #100000
 
-        //Hold reset for 10[u]
+        //Hold reset for 100[u]
         reset <= 1;
-        #10
+        #100
 
         $display("Simulation Complete");
 
@@ -63,14 +63,11 @@ module TestBench;
 
     initial
     begin
-        #50
-        
+        #200
 
         //Note 1
         `SET_REG_24(16'h0011, 24'h0FFFFF); //Incr
-
         `SET_REG(16'h0014, 8'h01); //WaveType = Square
-
         `SET_REG_24(16'h0015, 24'h3FFFFF); //PulseWidth
         
         `SET_REG_24(16'h0018, 24'h000500); //Attack
@@ -82,9 +79,7 @@ module TestBench;
 
         //Note 2
         `SET_REG_24(16'h0031, 24'h0FFFFF); //Incr
-
         `SET_REG(16'h0034, 8'h02); //WaveType = Triangle
-
         `SET_REG_24(16'h0035, 24'h7FFFFF); //PulseWidth
         
         `SET_REG_24(16'h0038, 24'h000500); //Attack
@@ -105,9 +100,8 @@ module TestBench;
 
         `SET_REG(16'h0030, 8'h00); //Gate = Close
 
-        `SET_REG_24(16'h0011, 24'h00FFFF);
-
-        `SET_REG_24(16'h0015, 24'h7FFFFF);
+        `SET_REG_24(16'h0011, 24'h00FFFF); //Incr
+        `SET_REG_24(16'h0015, 24'h7FFFFF); //PulseWidth
 
         #3000
 
@@ -117,13 +111,12 @@ module TestBench;
 
         `SET_REG(16'h0010, 8'h00); //Gate = Close
 
-
         #20000
 
         `SET_REG(16'h0030, 8'h00); //Gate = Close
 
         
-        #20
+        #100
 
         addr <= 0;
         writedata <= 0;
