@@ -87,19 +87,24 @@ module ADSR
         end //If (Reset == 0)
     end
 
-    always @(Gate or Reset)
+    always @(Reset)
     begin
-        if (Gate == 1 || Reset == 1)
+        if (Reset == 1)
         begin
             Envelope = 0;
             ADSRstate = 2'b00;
-            if (Gate == 1)
-            begin
-                Running = 1;
-            end
         end
+    end
 
-        if (Gate == 0)
+    always @(Gate)
+    begin
+        if (Gate == 1)
+        begin
+            // Envelope = 0; //Removed so that notes can 'flow' into eachother
+            ADSRstate = 2'b00;
+            Running = 1;
+        end
+        else
         begin
             ADSRstate <= 2'b11;
         end

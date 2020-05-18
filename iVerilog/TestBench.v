@@ -103,23 +103,29 @@ module TestBench;
         #20000
 
 
-        addr <= 16'h0030; writedata = 8'h00; //Gate = Close
-        readwrite <= 1; busclk <= 1; #2 busclk <= 0; #2
+        `SET_REG(16'h0030, 8'h00); //Gate = Close
 
-        // addr <= 16'h0011; writedata = 8'h05; //Incr 
-        // readwrite <= 1; busclk <= 1; #2 busclk <= 0; #2
+        `SET_REG_24(16'h0011, 24'h00FFFF);
 
-        // addr <= 16'h0013; writedata = 8'h7F; //PulseWidth 
-        // readwrite <= 1; busclk <= 1; #2 busclk <= 0; #2
+        `SET_REG_24(16'h0015, 24'h7FFFFF);
+
+        #3000
+
+        `SET_REG(16'h0030, 8'h01); //Gate = Open
 
         #30000
 
-        addr <= 16'h0010; writedata = 8'h00; //Gate = Close
-        readwrite <= 1; busclk <= 1; #2 busclk <= 0; #2
+        `SET_REG(16'h0010, 8'h00); //Gate = Close
+
+
+        #20000
+
+        `SET_REG(16'h0030, 8'h00); //Gate = Close
 
         
         #20
 
+        addr <= 0;
         writedata <= 0;
         readwrite <= 0;
     end
