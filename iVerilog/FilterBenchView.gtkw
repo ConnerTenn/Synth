@@ -1,20 +1,31 @@
 [*]
 [*] GTKWave Analyzer v3.3.104 (w)1999-2020 BSI
-[*] Thu May 21 01:49:58 2020
+[*] Thu May 21 02:14:06 2020
 [*]
 [dumpfile] "/home/conner/Dev/Synth/iVerilog/FilterBench.vcd"
-[dumpfile_mtime] "Thu May 21 01:48:47 2020"
-[dumpfile_size] 989094
+[dumpfile_mtime] "Thu May 21 02:12:55 2020"
+[dumpfile_size] 17696
 [savefile] "/home/conner/Dev/Synth/iVerilog/FilterBenchView.gtkw"
-[timestart] 0
+[timestart] 987
 [size] 1680 1004
 [pos] -1 -1
-*-1.000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-3.000000 1003 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] FilterBench.
 [sst_width] 231
-[signals_width] 78
+[signals_width] 158
 [sst_expanded] 1
 [sst_vpaned_height] 269
 @28
 FilterBench.clock
+@200
+-
+@201
+-@ram
+@28
+FilterBench.ram.Clock
+FilterBench.ram.ReadWrite
+@22
+FilterBench.ram.Address[7:0]
+FilterBench.ram.Data[7:0]
 [pattern_trace] 1
 [pattern_trace] 0
