@@ -6,6 +6,8 @@ program
 
 *.syn
 
-iVerilog/TestBench
+iVerilog/TopBench
 
 *.vcd
+
+iVerilog/FilterBench

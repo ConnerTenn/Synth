@@ -1,19 +1,29 @@
 
 
-.PHONY: all TestBench run
+.PHONY: all TopBench runTop FilterBench runFilter
 
-all: clean TestBench
+# all: clean TopBench 
 
-TestBench:
-	iverilog -s TestBench *.v -o TestBench
+TopBench: clean
+	iverilog -s TopBench *.v -o TopBench
 
-run: all
+runTop: TopBench
 	@echo -e "\033[32;1mBegin Simulation\033[0m"
 	@echo
-	@vvp TestBench
+	@vvp TopBench
+	@echo
+	@echo -e "\033[32;1mEnd Simulation\033[0m"
+
+FilterBench: clean
+	iverilog -s FilterBench *.v -o FilterBench
+
+runFilter: FilterBench
+	@echo -e "\033[32;1mBegin Simulation\033[0m"
+	@echo
+	@vvp FilterBench
 	@echo
 	@echo -e "\033[32;1mEnd Simulation\033[0m"
 
 clean:
-	rm -f TestBench
+	rm -f TopBench FilterBench *.vcd
 

@@ -1,7 +1,7 @@
 
 `timescale 1 ms / 10 us
 
-module TestBench;
+module TopBench;
 
     reg clock = 0, reset = 1;
     reg [1:0] wavetype = 2'b00;
@@ -19,7 +19,7 @@ module TestBench;
 
     initial
     begin
-        $dumpfile ("TestBench.vcd"); 
+        $dumpfile ("TopBench.vcd"); 
         $dumpvars;
         $display("Running Simulation...");
         
