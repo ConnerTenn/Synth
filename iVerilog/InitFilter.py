@@ -16,7 +16,7 @@ for i in range(0, 0x8000):
     FFilterVals.write("0\n")
 
 for s in sinc:
-    binary = round(s*0x1000)
+    binary = round(s*0x10000)
     if binary < 0: binary += (1<<24)
     high = (binary&0xFF0000)>>16
     mid = (binary&0x00FF00)>>8
@@ -24,7 +24,7 @@ for s in sinc:
     FFilterVals.write(hex(low)[2:] + "\n")
     FFilterVals.write(hex(mid)[2:] + "\n")
     FFilterVals.write(hex(high)[2:] + "\n")
-    print("{:06X}  [{:02X},{:02X},{:02X}]".format(binary, low, mid, high))
+    print("0x{:06X}  [0x{:02X},0x{:02X},0x{:02X}]".format(binary, low, mid, high))
 
 for i in range(0x8000+len(sinc)*3, 0x10000):
     FFilterVals.write("0\n")

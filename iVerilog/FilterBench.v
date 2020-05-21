@@ -9,6 +9,7 @@ module FilterBench;
     parameter TWO_STEP = MIN_STEP*2;
 
     reg clock = 0;
+    reg reset = 1;
 
     reg dataclock = 0;
     reg [15:0] addr = 0;
@@ -22,6 +23,9 @@ module FilterBench;
         $dumpfile("FilterBench.vcd"); 
         $dumpvars;
         $display("Running Simulation...");
+
+        #TWO_STEP
+        reset <= 0;
         
         #1
 
@@ -74,6 +78,13 @@ module FilterBench;
         .Address(addr),
         .Data(dataio),
         .ReadWrite(rw)
+    );
+
+    Filter filter(
+        .Clock(clock),
+        .Reset(reset),
+        .WaveIn(24'h090807), .WaveOut(),
+        .MemAddr(), .MemData(), .MemClk(), .MemWrite()
     );
 
 endmodule
