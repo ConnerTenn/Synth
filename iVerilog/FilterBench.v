@@ -11,11 +11,11 @@ module FilterBench;
     reg clock = 0;
 
     reg dataclock = 0;
-    reg [7:0] addr = 0;
+    reg [15:0] addr = 0;
     reg [7:0] data = 0;
     reg rw = 0;
     
-
+    integer fi;
 
     initial
     begin
@@ -46,6 +46,14 @@ module FilterBench;
         rw <= 0;
 
         dataclock <= 1; #TWO_STEP dataclock <= 0; #TWO_STEP
+
+        #0.05
+
+        //RamDump
+        for (fi=0; fi<255; fi=fi+1)
+        begin
+            addr <= 16'h8000+fi; rw <= 0; dataclock <= 1; #TWO_STEP dataclock <= 0; #TWO_STEP;
+        end
 
         #1
 

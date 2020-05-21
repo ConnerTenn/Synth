@@ -14,7 +14,10 @@ runTop: TopBench
 	@echo
 	@echo -e "\033[32;1mEnd Simulation\033[0m"
 
-FilterBench: clean
+FilterVals.txt:
+	python InitFilter.py
+
+FilterBench: clean FilterVals.txt
 	iverilog -s FilterBench *.v -o FilterBench
 
 runFilter: FilterBench
@@ -25,5 +28,5 @@ runFilter: FilterBench
 	@echo -e "\033[32;1mEnd Simulation\033[0m"
 
 clean:
-	rm -f TopBench FilterBench *.vcd
+	rm -f TopBench FilterBench *.vcd FilterVals.txt
 

@@ -11,3 +11,5 @@ iVerilog/TopBench
 *.vcd
 
 iVerilog/FilterBench
+
+iVerilog/FilterVals.txt
