@@ -7,16 +7,16 @@ try: f = open(FFilterVals, 'w')
 except: print("Error opening file \"{0}\"".format(FFilterVals)); exit(-1)
 FFilterVals=f
 
-d=5
+d=10
 sinc=[1/d]
-for i in range(1,256):
+for i in range(1,512):
 	sinc += [ ( sin(pi*(i)/d) / (pi*(i)/d) )/d ] #sinc
 
 for i in range(0, 0x8000):
     FFilterVals.write("0\n")
 
 for s in sinc:
-    binary = round(s*0x10000)
+    binary = round(s*0x100000)
     if binary < 0: binary += (1<<24)
     high = (binary&0xFF0000)>>16
     mid = (binary&0x00FF00)>>8

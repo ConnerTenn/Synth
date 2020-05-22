@@ -1,6 +1,6 @@
 
 
-`timescale 1 ms / 10 ns
+`timescale 1 ms / 1 ns
 
 
 module FilterBench;
@@ -45,7 +45,7 @@ module FilterBench;
     wire [7:0] dataio; //= write==1 ? data : 8'hZZ;
 
     reg [23:0] counter = 0;
-    wire [23:0] waveform = counter > 24'h7FFFFF ? 24'hBFFFFF : 24'h3FFFFF;
+    wire [23:0] waveform = counter > 24'h7FFFFF ? 24'hCFFFFF : 24'h300000;
 
     Ram ram (
         .Clock(memclk),
@@ -63,7 +63,7 @@ module FilterBench;
 
     always @(posedge clock)
     begin
-        counter <= counter + 24'h000080;
+        counter <= counter + 24'h000020;
     end
 
 endmodule

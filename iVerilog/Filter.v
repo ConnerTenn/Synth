@@ -7,7 +7,7 @@ module Filter(
     MemAddr, MemData, MemClk, MemWrite
 );
 
-    parameter FILTER_DEPTH = 256;
+    parameter FILTER_DEPTH = 512;
 
     parameter SAMPLE_ADDR = 16'h0000;
     parameter FILTER_ADDR = 16'h8000;
@@ -75,7 +75,7 @@ module Filter(
 
         if (memAccStage == 3'h0)
         begin
-            outBuff <= outBuff + (mulBuff>>16);
+            outBuff <= outBuff + (mulBuff>>20);
         end
 
         if (index==0 && memAccStage == 3'h1)
