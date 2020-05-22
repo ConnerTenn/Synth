@@ -1,0 +1,68 @@
+[*]
+[*] GTKWave Analyzer v3.3.104 (w)1999-2020 BSI
+[*] Fri May 22 04:35:45 2020
+[*]
+[dumpfile] "/home/conner/Dev/Synth/iVerilog/FilterBench.vcd"
+[dumpfile_mtime] "Fri May 22 04:35:33 2020"
+[dumpfile_size] 152084675
+[savefile] "/home/conner/Dev/Synth/iVerilog/FilterBenchView.gtkw"
+[timestart] 0
+[size] 1280 978
+[pos] -1 -1
+*-22.000000 2810005 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] FilterBench.
+[sst_width] 231
+[signals_width] 320
+[sst_expanded] 1
+[sst_vpaned_height] 260
+@28
+FilterBench.clock
+@8022
+FilterBench.counter[23:0]
+FilterBench.waveform[23:0]
+@20000
+-
+-
+@200
+-
+-
+-@ram
+@28
+FilterBench.ram.Clock
+FilterBench.ram.ReadWrite
+@22
+FilterBench.ram.Address[15:0]
+FilterBench.ram.Data[7:0]
+@200
+-
+-
+-@filter
+@22
+FilterBench.filter.index[15:0]
+FilterBench.filter.sampleAddrOffset[15:0]
+FilterBench.filter.memAccStage[2:0]
+@200
+-
+@28
+FilterBench.filter.MemClk
+FilterBench.filter.MemWrite
+@22
+FilterBench.filter.MemAddr[15:0]
+FilterBench.filter.MemData[7:0]
+@200
+-
+@22
+FilterBench.filter.filterCoeff[23:0]
+FilterBench.filter.sample[23:0]
+@200
+-
+@22
+FilterBench.filter.outBuff[47:0]
+FilterBench.filter.mulBuff[47:0]
+@88023
+FilterBench.filter.WaveOut[23:0]
+@20000
+-
+-
+[pattern_trace] 1
+[pattern_trace] 0

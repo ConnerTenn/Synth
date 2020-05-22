@@ -1,0 +1,77 @@
+[*]
+[*] GTKWave Analyzer v3.3.104 (w)1999-2020 BSI
+[*] Thu May 21 01:47:45 2020
+[*]
+[dumpfile] "/home/conner/Dev/Synth/iVerilog/TopBench.vcd"
+[dumpfile_mtime] "Thu May 21 01:47:32 2020"
+[dumpfile_size] 149143416
+[savefile] "/home/conner/Dev/Synth/iVerilog/TopBenchView.gtkw"
+[timestart] 0
+[size] 1680 1004
+[pos] -1 -1
+*-20.727730 1692000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] TopBench.
+[treeopen] TopBench.TL.
+[treeopen] TopBench.TL.channels[0].
+[treeopen] TopBench.TL.channels[0].channel.
+[treeopen] TopBench.TL.channels[1].
+[treeopen] TopBench.TL.channels[1].channel.
+[sst_width] 231
+[signals_width] 271
+[sst_expanded] 1
+[sst_vpaned_height] 298
+@200
+-@TopBench
+@28
+TopBench.clock
+TopBench.reset
+@22
+TopBench.TL.BusAddress[15:0]
+TopBench.TL.BusData[7:0]
+@28
+TopBench.TL.BusReadWrite
+TopBench.TL.BusClock
+@88022
+TopBench.waveform[23:0]
+@20000
+-
+-
+-
+@200
+-
+-@channels[0]
+@28
+TopBench.TL.channels[0].channel.gate
+TopBench.TL.channels[0].channel.running
+@22
+TopBench.TL.channels[0].channel.incr[23:0]
+@88022
+TopBench.TL.channels[0].channel.Waveform[23:0]
+@20000
+-
+@28
+TopBench.TL.channels[0].channel.adsr.ADSRstate[1:0]
+@88022
+TopBench.TL.channels[0].channel.adsr.Envelope[23:0]
+@20000
+-
+@200
+-
+-@channels[1]
+@28
+TopBench.TL.channels[1].channel.gate
+TopBench.TL.channels[1].channel.running
+@22
+TopBench.TL.channels[1].channel.incr[23:0]
+@88022
+TopBench.TL.channels[1].channel.Waveform[23:0]
+@20000
+-
+@28
+TopBench.TL.channels[1].channel.adsr.ADSRstate[1:0]
+@88022
+TopBench.TL.channels[1].channel.adsr.Envelope[23:0]
+@20000
+-
+[pattern_trace] 1
+[pattern_trace] 0
