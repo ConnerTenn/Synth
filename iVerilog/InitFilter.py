@@ -7,7 +7,7 @@ try: f = open(FFilterVals, 'w')
 except: print("Error opening file \"{0}\"".format(FFilterVals)); exit(-1)
 FFilterVals=f
 
-d=50
+d=1
 sinc=[1/d]
 for i in range(1,255):
 	sinc += [ ( sin(pi*(i)/d) / (pi*(i)/d) )/d ] #sinc

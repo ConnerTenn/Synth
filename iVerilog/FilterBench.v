@@ -1,11 +1,11 @@
 
 
-`timescale 1 ms / 1 us
+`timescale 1 ms / 10 ns
 
 
 module FilterBench;
 
-    parameter MIN_STEP = 0.0005;
+    parameter MIN_STEP = 0.000005;
     parameter TWO_STEP = MIN_STEP*2;
 
     reg clock = 0;
@@ -27,39 +27,7 @@ module FilterBench;
         #TWO_STEP
         reset <= 0;
         
-        #1
-
-        // addr <= 1;
-        // data <= 5;
-        // rw <= 1;
-
-        // dataclock <= 1; #TWO_STEP dataclock <= 0; #TWO_STEP
-
-        // addr <= 2;
-        // data <= 1;
-        // rw <= 1;
-
-        // dataclock <= 1; #TWO_STEP dataclock <= 0; #TWO_STEP
-
-        // addr <= 1;
-        // rw <= 0;
-
-        // dataclock <= 1; #TWO_STEP dataclock <= 0; #TWO_STEP
-
-        // addr <= 2;
-        // rw <= 0;
-
-        // dataclock <= 1; #TWO_STEP dataclock <= 0; #TWO_STEP
-
-        // #0.05
-
-        // //RamDump
-        // for (fi=0; fi<255; fi=fi+1)
-        // begin
-        //     addr <= 16'h8000+fi; rw <= 0; dataclock <= 1; #TWO_STEP dataclock <= 0; #TWO_STEP;
-        // end
-
-        #1
+        #10
 
         $display("Simulation Complete");
 
