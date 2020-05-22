@@ -16,7 +16,7 @@ module Filter(
     input [23:0] WaveIn;
     output [23:0] WaveOut;
 
-    output [15:0] MemAddr; inout [7:0] MemData; output MemClk; output reg MemWrite = 0;
+    output reg [15:0] MemAddr = 0; inout [7:0] MemData; output MemClk; output reg MemWrite = 0;
     reg [7:0] memdata = 0; 
     assign MemData = MemWrite ? memdata : 8'hZZ;
 
@@ -38,66 +38,32 @@ module Filter(
     begin
         if (index==0)
         begin
-            MemWrite <= 1;
             case (memAccStage)
-            3'h0: begin memdata <= WaveIn[7:0];     end
-            3'h1: begin memdata <= WaveIn[15:8];    end
-            3'h2: begin memdata <= WaveIn[23:16];   end
+
+            3'h0: begin memdata <= WaveIn[7:0];     MemAddr <= SAMPLE_ADDR; MemWrite <= 1;  end
+            3'h1: begin memdata <= WaveIn[15:8];    MemAddr <= SAMPLE_ADDR+1; end
+            3'h2: begin memdata <= WaveIn[23:16];   MemAddr <= SAMPLE_ADDR+2; end
+            3'h3: begin MemWrite <= 0;              MemAddr <= FILTER_ADDR;   end
+            3'h4: begin filterCoeff[7:0] <= MemData;    MemAddr <= FILTER_ADDR+1; end
+            3'h5: begin filterCoeff[15:8] <= MemData;   MemAddr <= FILTER_ADDR+2; end
+            3'h6: begin filterCoeff[23:16] <= MemData;  MemAddr <= (1<<2)+FILTER_ADDR; index <= index+1; end
             endcase
+            memAccStage <= memAccStage<6?memAccStage+1:0;
         end
         else
         begin
-            MemWrite <= 0;
             case (memAccStage)
-            3'h0: begin sample[7:0] <= MemData;     end
-            3'h1: begin sample[15:8] <= MemData;    end
-            3'h2: begin sample[23:16] <= MemData;   end
+            3'h0: begin filterCoeff[7:0] <= MemData;    MemAddr <= (index<<2)+FILTER_ADDR+1; end
+            3'h1: begin filterCoeff[15:8] <= MemData;   MemAddr <= (index<<2)+FILTER_ADDR+2; end
+            3'h2: begin filterCoeff[23:16] <= MemData;  MemAddr <= (index<<2)+SAMPLE_ADDR;   end
+            3'h3: begin sample[7:0] <= MemData;     MemAddr <= (index<<2)+SAMPLE_ADDR+1; end
+            3'h4: begin sample[15:8] <= MemData;    MemAddr <= (index<<2)+SAMPLE_ADDR+2; end
+            3'h5: begin sample[23:16] <= MemData;   MemAddr <= ((index+1)<<2)+FILTER_ADDR; index <= index+1; end
             endcase
+            memAccStage <= memAccStage<5?memAccStage+1:0;
         end
-        
-        case (memAccStage)
-        3'h3: begin filterCoeff[7:0] <= MemData;    end
-        3'h4: begin filterCoeff[15:8] <= MemData;   end
-        3'h5: begin filterCoeff[23:16] <= MemData;  index <= index+1; end
-        endcase
-
-        memAccStage <= memAccStage<5?memAccStage+1:0;
 
     end
-
-    assign MemAddr = MemAddrSel(memAccStage, index);
-    function [15:0] MemAddrSel(
-        input [2:0] memstage, 
-        input [15:0] idx
-    );
-        if (memstage<3)
-        begin
-            if (index==0)
-            begin
-                case (memstage)
-                3'h0: MemAddrSel = SAMPLE_ADDR;
-                3'h1: MemAddrSel = SAMPLE_ADDR+1;
-                3'h2: MemAddrSel = SAMPLE_ADDR+2;
-                endcase
-            end
-            else
-            begin
-                case (memstage)
-                3'h0: MemAddrSel = (idx<<2)+SAMPLE_ADDR;
-                3'h1: MemAddrSel = (idx<<2)+SAMPLE_ADDR+1;
-                3'h2: MemAddrSel = (idx<<2)+SAMPLE_ADDR+2;
-                endcase
-            end
-        end
-        else
-        begin
-            case (memstage)
-            3'h3: MemAddrSel = (idx<<2)+FILTER_ADDR;
-            3'h4: MemAddrSel = (idx<<2)+FILTER_ADDR+1;
-            3'h5: MemAddrSel = (idx<<2)+FILTER_ADDR+2;
-            endcase
-        end
-    endfunction
 
     // always @(negedge Clock)
     // begin

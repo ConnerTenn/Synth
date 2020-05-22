@@ -24,9 +24,10 @@ for s in sinc:
     FFilterVals.write(hex(low)[2:] + "\n")
     FFilterVals.write(hex(mid)[2:] + "\n")
     FFilterVals.write(hex(high)[2:] + "\n")
+    FFilterVals.write("0\n")
     print("0x{:06X}  [0x{:02X},0x{:02X},0x{:02X}]".format(binary, low, mid, high))
 
-for i in range(0x8000+len(sinc)*3, 0x10000):
+for i in range(0x8000+len(sinc)*4, 0x10000):
     FFilterVals.write("0\n")
 
 FFilterVals.close()
