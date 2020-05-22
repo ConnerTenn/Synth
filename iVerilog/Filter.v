@@ -27,6 +27,7 @@ module Filter(
 
     reg [15:0] index = 0;
     reg [15:0] sampleAddrOffset = 0;
+    wire [15:0] sampleAddr = ((SAMPLE_ADDR+sampleAddrOffset+index) % FILTER_DEPTH)<<2;
 
     reg [23:0] filterCoeff = 0;
     reg [23:0] sample = 0;
@@ -40,9 +41,9 @@ module Filter(
         if (index==0)
         begin
             case (memAccStage)
-            3'h0: begin memdata <= WaveIn[7:0];     MemAddr <= SAMPLE_ADDR; sample <= WaveIn; MemWrite <= 1;  end
-            3'h1: begin memdata <= sample[15:8];    MemAddr <= SAMPLE_ADDR+1; end
-            3'h2: begin memdata <= sample[23:16];   MemAddr <= SAMPLE_ADDR+2; end
+            3'h0: begin memdata <= WaveIn[7:0];     MemAddr <= sampleAddr; sample <= WaveIn; MemWrite <= 1;  end
+            3'h1: begin memdata <= sample[15:8];    MemAddr <= sampleAddr+1; end
+            3'h2: begin memdata <= sample[23:16];   MemAddr <= sampleAddr+2; end
             3'h3: begin MemWrite <= 0;              MemAddr <= FILTER_ADDR;   end
             3'h4: begin filterCoeff[7:0] <= MemData;    MemAddr <= FILTER_ADDR+1; end
             3'h5: begin filterCoeff[15:8] <= MemData;   MemAddr <= FILTER_ADDR+2; end
@@ -55,9 +56,9 @@ module Filter(
             case (memAccStage)
             3'h0: begin filterCoeff[7:0] <= MemData;    MemAddr <= (index<<2)+FILTER_ADDR+1; end
             3'h1: begin filterCoeff[15:8] <= MemData;   MemAddr <= (index<<2)+FILTER_ADDR+2; end
-            3'h2: begin filterCoeff[23:16] <= MemData;  MemAddr <= ((index<<2)+SAMPLE_ADDR) % FILTER_DEPTH;   end
-            3'h3: begin sample[7:0] <= MemData;     MemAddr <= ((index<<2)+SAMPLE_ADDR+1) % FILTER_DEPTH; end
-            3'h4: begin sample[15:8] <= MemData;    MemAddr <= ((index<<2)+SAMPLE_ADDR+2) % FILTER_DEPTH; end
+            3'h2: begin filterCoeff[23:16] <= MemData;  MemAddr <= sampleAddr;   end
+            3'h3: begin sample[7:0] <= MemData;     MemAddr <= sampleAddr+1; end
+            3'h4: begin sample[15:8] <= MemData;    MemAddr <= sampleAddr+2; end
             3'h5: begin sample[23:16] <= MemData;   MemAddr <= ((index+1)<<2)+FILTER_ADDR; index <= index+1; end
             endcase
             memAccStage <= memAccStage<5?memAccStage+1:0;
