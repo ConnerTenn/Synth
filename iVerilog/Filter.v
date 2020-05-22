@@ -26,6 +26,7 @@ module Filter(
     reg memAcc = 0;
 
     reg [15:0] index = 0;
+    reg [15:0] sampleAddrOffset = 0;
 
     reg [23:0] filterCoeff = 0;
     reg [23:0] sample = 0;
@@ -45,7 +46,7 @@ module Filter(
             3'h3: begin MemWrite <= 0;              MemAddr <= FILTER_ADDR;   end
             3'h4: begin filterCoeff[7:0] <= MemData;    MemAddr <= FILTER_ADDR+1; end
             3'h5: begin filterCoeff[15:8] <= MemData;   MemAddr <= FILTER_ADDR+2; end
-            3'h6: begin filterCoeff[23:16] <= MemData;  MemAddr <= (1<<2)+FILTER_ADDR; index <= index<FILTER_DEPTH-1 ? index+1 : 0; end
+            3'h6: begin filterCoeff[23:16] <= MemData;  MemAddr <= (1<<2)+FILTER_ADDR; index <= index+1; end
             endcase
             memAccStage <= memAccStage<6?memAccStage+1:0;
         end
@@ -54,10 +55,10 @@ module Filter(
             case (memAccStage)
             3'h0: begin filterCoeff[7:0] <= MemData;    MemAddr <= (index<<2)+FILTER_ADDR+1; end
             3'h1: begin filterCoeff[15:8] <= MemData;   MemAddr <= (index<<2)+FILTER_ADDR+2; end
-            3'h2: begin filterCoeff[23:16] <= MemData;  MemAddr <= (index<<2)+SAMPLE_ADDR;   end
-            3'h3: begin sample[7:0] <= MemData;     MemAddr <= (index<<2)+SAMPLE_ADDR+1; end
-            3'h4: begin sample[15:8] <= MemData;    MemAddr <= (index<<2)+SAMPLE_ADDR+2; end
-            3'h5: begin sample[23:16] <= MemData;   MemAddr <= ((index+1)<<2)+FILTER_ADDR; index <= index<FILTER_DEPTH-1 ? index+1 : 0; end
+            3'h2: begin filterCoeff[23:16] <= MemData;  MemAddr <= ((index<<2)+SAMPLE_ADDR) % FILTER_DEPTH;   end
+            3'h3: begin sample[7:0] <= MemData;     MemAddr <= ((index<<2)+SAMPLE_ADDR+1) % FILTER_DEPTH; end
+            3'h4: begin sample[15:8] <= MemData;    MemAddr <= ((index<<2)+SAMPLE_ADDR+2) % FILTER_DEPTH; end
+            3'h5: begin sample[23:16] <= MemData;   MemAddr <= ((index+1)<<2)+FILTER_ADDR; index <= index+1; end
             endcase
             memAccStage <= memAccStage<5?memAccStage+1:0;
         end
@@ -84,11 +85,13 @@ module Filter(
     end
 
 
-    // always @(negedge Clock)
-    // begin
-    //     case (memAccStage)
-    //     3'h0: MemAddr <= index + SAMPLE_ADDR;
-    //     endcase
-    // end
+    always @(negedge Clock)
+    begin
+        if (index == FILTER_DEPTH) 
+        begin 
+            index <= 0;
+            sampleAddrOffset <= sampleAddrOffset>0 ? sampleAddrOffset-1:FILTER_DEPTH-1;
+        end
+    end
     
 endmodule
