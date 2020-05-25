@@ -49,7 +49,7 @@ module ADSR
                 2'b11: begin num = releaseNum; denom = releaseDenom; end
                 default: begin num = 0; denom = 1; end
             endcase
-            StepSel = num / denom;
+            StepSel = denom!=0? num / denom : 0;
         end
     endfunction
 
@@ -64,7 +64,7 @@ module ADSR
                 2'b00: //Attack
                     if (Running == 1)
                     begin
-                        if (Envelope>=WAVE_MAX-Attack)
+                        if (Envelope>=WAVE_MAX-divres-14)
                         begin
                             ADSRstate <= 2'b01;
                         end
@@ -76,7 +76,7 @@ module ADSR
                     
                 2'b01: //Decay
                     begin
-                        if (Envelope<=Sustain+Decay)
+                        if (Envelope<=Sustain+divres+14)
                         begin
                             ADSRstate <= 2'b10;
                         end
@@ -91,7 +91,7 @@ module ADSR
             end
             else //Release
             begin
-                if (Envelope <= 0+Release)
+                if (Envelope <= 0+divres+14)
                 begin
                     Running <= 0;
                 end
