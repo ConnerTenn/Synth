@@ -104,9 +104,10 @@ void InitSynth()
 				};
 	}
 
-	double d=1;
+	double d;//=20;
 	for (u8 f=0; f<2; f++)
 	{
+		d = 1 + 10 * f;
 		FilterCoeff[f][0]=REG((u64)(0xFFFFFF/d),24);
 		for (u16 i=1; i<FILTERDEPTH; i++)
 		{
@@ -153,6 +154,10 @@ void Tick()
 		else if (voice->Waveform==Triangle)
 		{
 			//voice->Value.Value = voice->Oscillator.Value > voice->PulseWidth.Value ? 0xFFFFFF : 0;
+		}
+		else if (voice->Waveform==Sine)
+		{
+			voice->Value.Value = sin(PI*(double)voice->Oscillator.Value/0xFFFFFF) * 0xFFFFFF;
 		}
 		else if (voice->Waveform==Noise)
 		{
