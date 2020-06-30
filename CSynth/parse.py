@@ -114,7 +114,10 @@ for line in lines:
 						#cmdout+=[ [voice,waveforms[param.upper()]] ]
 						setcmd(voice+1,"waveform",waveforms[param.upper()])
 					elif type(parseint(param,False))==type(0):
-						if len(arg)>0:
+						if len(arg)==1:
+							setcmd(voice+1,"incr",parseint(param,False))
+							setcmd(voice+1,"trigger",1)
+						elif len(arg)==2:
 							setcmd(voice+1,"incr",parseint(param,False))
 						else:
 							#cmdout+=[ [voice,notes[param]] ]
@@ -122,7 +125,10 @@ for line in lines:
 							setcmd(voice+1,"incr",parseint(param,False))
 							setcmd(voice+1,"trigger",1)
 					elif param in notes:
-						if len(arg)>0:
+						if len(arg)==1:
+							setcmd(voice+1,"incr",notes[param])
+							setcmd(voice+1,"trigger",1)
+						elif len(arg)==2:
 							setcmd(voice+1,"incr",notes[param])
 						else:
 							#cmdout+=[ [voice,notes[param]] ]
