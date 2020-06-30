@@ -25,18 +25,36 @@ waveforms={"SAW":0,"SQU":1,"TRI":2,"RND":3,"SIN":4,"SAM":5}
 
 cmdout=[] #command list to be written
 
+loopbuffer=[]
+def enterloop():
+	global loopbuffer
+	loopbuffer=[[]]+loopbuffer
+	pass
+
+def exitloop(loops):
+	global cmdout
+	global loopbuffer
+	
+	contents = loopbuffer[0]*loops
+	if len(loopbuffer) > 1:
+		loopbuffer = loopbuffer[1:]
+		loopbuffer[0]+=contents
+	else:
+		cmdout+=contents
+	
+
 regnames={"null":0, "oscillator":0, "incr":1, "waveform":2, "attack":3, "decay":4, "sustain":5, "release":6, "trigger":7, "pulsewidth":8, "volume":10}
 def setcmd(regset,name,value): #3 value command
-	global cmdout
-	cmdout+=[ [regset,regnames[name], value] ]
+	global loopbuffer
+	loopbuffer[0]+=[ [regset,regnames[name], value] ]
 
 def setcmd2(regset,value): #2 value command
-	global cmdout
-	cmdout+=[ [regset, value] ]
+	global loopbuffer
+	loopbuffer[0]+=[ [regset, value] ]
 
 def setcmd1(regset): #1 value command
-	global cmdout
-	cmdout+=[ [regset] ]
+	global loopbuffer
+	loopbuffer[0]+=[ [regset] ]
 
 def parseint(numstr, hx=True):
 	numstr=numstr.strip()
@@ -52,6 +70,8 @@ def parseint(numstr, hx=True):
 			return numstr
 
 nodel=False #no delay
+
+enterloop()
 
 lines=[]
 for line in ifile:
@@ -81,9 +101,11 @@ for line in lines:
 			elif ins=="DELAY":
 				setcmd2(17,parseint(param))
 			elif ins == "[":
-				print("Begin Loop")
+				print(">> Begin Loop")
+				enterloop()
 			elif ins == "]":
-				print("End Loop")
+				print("<< End Loop [" + param + "]")
+				exitloop(parseint(param))
 			else:
 				for voice in voices: #do for each voice
 					voice=parseint(voice)
@@ -128,6 +150,7 @@ for line in lines:
 		setcmd1(0)
 		print()
 
+exitloop(1)
 
 print(cmdout)
 
